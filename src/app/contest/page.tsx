@@ -33,22 +33,13 @@ const directions: DirectionInfo[] = [
     href: '/contest/math-ultra',
   },
   {
-    id: 'kaz-poem',
-    name: 'Өлең құрастыру',
-    icon: '✍️',
+    id: 'kaz-lang-lit',
+    name: 'Қазақ тілі мен әдебиеті',
+    icon: '📚',
     gradient: 'from-emerald-500 to-teal-500',
-    badge: 'Шығармашылық',
-    description: 'Алдыңғы 2 тармақ берілген, артқы екеуін өзі құрайды',
-    href: '/contest/kaz-poem',
-  },
-  {
-    id: 'kaz-essay',
-    name: 'Эссе',
-    icon: '📝',
-    gradient: 'from-amber-500 to-orange-500',
-    badge: 'Мәтін құрау',
-    description: 'Тақырып бойынша қысқа эссе жазу',
-    href: '/contest/kaz-essay',
+    badge: 'Тіл мен әдебиет',
+    description: 'Шығармашылық және аналитикалық дарындылықты анықтау',
+    href: '/contest/kaz-lang-lit',
   },
   {
     id: 'kaz-retell',
@@ -133,7 +124,7 @@ export default function ContestPage() {
                 <p className="text-slate-600 text-sm mb-4 leading-relaxed">{dir.description}</p>
                 
                 <div className="flex items-center justify-between mt-6">
-                  <span className="text-xs text-slate-400 font-medium">5 тапсырма</span>
+                  <span className="text-xs text-slate-400 font-medium">{dir.id === 'kaz-lang-lit' ? '16 тапсырма' : '5 тапсырма'}</span>
                   <span className={`text-white font-bold px-5 py-2 rounded-xl bg-gradient-to-r ${dir.gradient} group-hover:scale-105 transition-transform shadow-lg`}>
                     Кіру
                   </span>
