@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import QuestionCard from '@/components/QuestionCard'
@@ -13,17 +13,7 @@ export default function MathUltraPage() {
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadQuestions()
-  }, [grade])
-
-  useEffect(() => {
-    if (questions.length > 0) {
-      setShowAnswer(false)
-    }
-  }, [currentIndex, questions])
-
-  const loadQuestions = async () => {
+  const loadQuestions = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     setCurrentIndex(0)
@@ -51,7 +41,17 @@ export default function MathUltraPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [grade])
+
+  useEffect(() => {
+    loadQuestions()
+  }, [loadQuestions])
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      setShowAnswer(false)
+    }
+  }, [currentIndex, questions])
 
   const currentQuestion = questions[currentIndex]
 

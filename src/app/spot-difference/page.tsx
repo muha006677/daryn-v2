@@ -64,7 +64,7 @@ export default function SpotDifferencePage() {
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🔍</div>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Айырмашылықты тап</h1>
-          <p className="text-slate-600">Мәтіндік "айырмашылықты тап" карточкалары</p>
+          <p className="text-slate-600">Мәтіндік &quot;айырмашылықты тап&quot; карточкалары</p>
         </div>
 
         {questions.length === 0 ? (

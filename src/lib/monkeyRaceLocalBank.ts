@@ -1,7 +1,5 @@
 // Екі маймылдың ағашқа жарысы — local сұрақтар банкі
-import { getGradePolicy, type Question } from './gradePolicy'
-
-export { type Question }
+import type { Question } from './gameBanks'
 
 // Сынып бойынша сұрақтар банкі
 const questionsByGrade: Record<number, Question[]> = {

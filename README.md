@@ -1,32 +1,58 @@
 # Daryn V2
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with TypeScript and Tailwind CSS.
+Мұғалімдерге арналған AI көмекші платформасы - Сабақ жоспарлары, жұмыс парақтары және олимпиада тапсырмалары.
 
-## Getting Started
+## Технологиялар
 
-First, install the dependencies:
+- **Next.js 14** (App Router)
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS**
+- **OpenAI API**
 
+## Орнату
+
+1. Тәуелділіктерді орнатыңыз:
 ```bash
 npm install
 ```
 
-Then, run the development server:
+2. Жергілікті орта айнымалысын орнатыңыз:
+```bash
+cp .env.example .env.local
+```
 
+`.env.local` файлына:
+```
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini  # (міндетті емес)
+```
+
+3. Дәйексөз серверін іске қосыңыз:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Браузерде [http://localhost:3000](http://localhost:3000) ашыңыз.
 
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel-ға деплой
 
-## Learn More
+1. GitHub репозиторийіне кодты жіберіңіз
+2. [Vercel](https://vercel.com) сайтына кіріңіз
+3. Жобаны импорттаңыз
+4. Environment variables қосыңыз:
+   - `OPENAI_API_KEY`: OpenAI API кілті
+   - `OPENAI_MODEL`: (міндетті емес) Модель атауы
 
-To learn more about Next.js, take a look at the following resources:
+## Билд
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+npm start
+```
 
-## Deploy on Vercel
+## Линтинг
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new).
+```bash
+npm run lint
+```

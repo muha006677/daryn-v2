@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 
@@ -13,11 +13,19 @@ export default function ReactionLightPage() {
   const [round, setRound] = useState(1)
   const [error, setError] = useState<string | null>(null)
 
+  const nextRound = useCallback(() => {
+    if (questions.length > 0) {
+      const randomQuestion = questions[Math.floor(Math.random() * questions.length)]
+      setCurrentColor(randomQuestion.prompt || '')
+      setRound(prev => prev + 1)
+    }
+  }, [questions])
+
   useEffect(() => {
     if (questions.length > 0 && !currentColor) {
       nextRound()
     }
-  }, [questions])
+  }, [questions.length, currentColor, nextRound])
 
   const startGame = async () => {
     setIsLoading(true)
@@ -47,14 +55,6 @@ export default function ReactionLightPage() {
       setError(err instanceof Error ? err.message : 'Қате орын алды')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const nextRound = () => {
-    if (questions.length > 0) {
-      const randomQuestion = questions[Math.floor(Math.random() * questions.length)]
-      setCurrentColor(randomQuestion.prompt || '')
-      setRound(prev => prev + 1)
     }
   }
 
@@ -90,7 +90,7 @@ export default function ReactionLightPage() {
 
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🚦</div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Реакция "Бағдаршам"</h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Реакция &quot;Бағдаршам&quot;</h1>
           <p className="text-slate-600">Ереже ауысатын реакция ойыны</p>
         </div>
 

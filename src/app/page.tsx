@@ -136,7 +136,7 @@ export default function Home() {
               className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-lime-300 transition-all text-center"
             >
               <div className="text-4xl mb-3">🚦</div>
-              <h3 className="font-bold text-slate-900 mb-2">Реакция "Бағдаршам"</h3>
+              <h3 className="font-bold text-slate-900 mb-2">Реакция &quot;Бағдаршам&quot;</h3>
               <p className="text-sm text-slate-600 mb-3">Жылдам реакция</p>
               <div className="text-lime-600 font-semibold text-sm">Ойынға кіру →</div>
             </Link>
