@@ -15,6 +15,11 @@ import {
   getTeamStrategy,
 } from './gameBanks'
 import {
+  getCaptureFlagQuestions,
+  getCastleSiegeQuestions,
+  getComboRushQuestions,
+} from './newGamesBanks'
+import {
   getLogicProQuestions,
   getMathUltraQuestions,
   getPoemCompleteQuestions,
@@ -44,6 +49,11 @@ export type Domain =
   | 'spot-difference'
   | 'world-quick'
   | 'team-strategy'
+  | 'capture-flag'
+  | 'castle-siege'
+  | 'combo-rush'
+  | 'quick-judge'
+  | 'sentence-puzzle'
 
 export interface QuestionEngineOptions {
   domain: Domain
@@ -192,6 +202,23 @@ function getLocalQuestions(domain: Domain, grade: number): LocalQuestion[] {
     
     case 'memory':
       return getMemoryProQuestions(grade)
+    
+    case 'capture-flag':
+      return getCaptureFlagQuestions(grade)
+    
+    case 'castle-siege':
+      return getCastleSiegeQuestions(grade)
+    
+    case 'combo-rush':
+      return getComboRushQuestions(grade)
+    
+    case 'quick-judge':
+      // quick-judge 使用特殊的 TrueFalseQuestion 类型，需要特殊处理
+      return []
+    
+    case 'sentence-puzzle':
+      // sentence-puzzle 使用特殊的 SentencePuzzleQuestion 类型，需要特殊处理
+      return []
     
     default:
       return []

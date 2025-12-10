@@ -42,6 +42,20 @@ export default function Home() {
             </Link>
 
             <Link
+              href="/contest/competition-30"
+              className="group bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-8 hover:shadow-xl transition-all"
+            >
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-3xl mb-4">
+                🎯
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">30 сұрақтық олимпиадалық режим</h3>
+              <p className="text-slate-600 mb-4">
+                6 пәннен аралас таңдау тапсырмалары: Математика, English, Қазақ тілі, Қазақ әдебиеті, Жаратылыстану, Әлемтану
+              </p>
+              <div className="text-indigo-600 font-semibold">30 тапсырма →</div>
+            </Link>
+
+            <Link
               href="/logic-sprint"
               className="group bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-8 hover:shadow-xl transition-all"
             >
@@ -179,6 +193,56 @@ export default function Home() {
               <h3 className="font-bold text-slate-900 mb-2">Командалық стратегия</h3>
               <p className="text-sm text-slate-600 mb-3">Командалық ойлау</p>
               <div className="text-slate-600 font-semibold text-sm">Ойынға кіру →</div>
+            </Link>
+
+            <Link
+              href="/capture-flag"
+              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all text-center"
+            >
+              <div className="text-4xl mb-3">🚩</div>
+              <h3 className="font-bold text-slate-900 mb-2">Байрақты алу</h3>
+              <p className="text-sm text-slate-600 mb-3">Екі команда байраққа жарысады</p>
+              <div className="text-red-600 font-semibold text-sm">Ойынға кіру →</div>
+            </Link>
+
+            <Link
+              href="/castle-siege"
+              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-purple-300 transition-all text-center"
+            >
+              <div className="text-4xl mb-3">🏰</div>
+              <h3 className="font-bold text-slate-900 mb-2">Қамал шабуылы</h3>
+              <p className="text-sm text-slate-600 mb-3">Екі команда қамалды қорғайды</p>
+              <div className="text-purple-600 font-semibold text-sm">Ойынға кіру →</div>
+            </Link>
+
+            <Link
+              href="/combo-rush"
+              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-yellow-300 transition-all text-center"
+            >
+              <div className="text-4xl mb-3">⚡</div>
+              <h3 className="font-bold text-slate-900 mb-2">Қатарынан шабуыл</h3>
+              <p className="text-sm text-slate-600 mb-3">Жылдам жауап беру және қатарынан дұрыс</p>
+              <div className="text-yellow-600 font-semibold text-sm">Ойынға кіру →</div>
+            </Link>
+
+            <Link
+              href="/quick-judge"
+              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-indigo-300 transition-all text-center"
+            >
+              <div className="text-4xl mb-3">⚖️</div>
+              <h3 className="font-bold text-slate-900 mb-2">Дұрыс/Бұрыс тез шешім</h3>
+              <p className="text-sm text-slate-600 mb-3">Жылдам дұрыс немесе бұрыс деп анықтау</p>
+              <div className="text-indigo-600 font-semibold text-sm">Ойынға кіру →</div>
+            </Link>
+
+            <Link
+              href="/sentence-puzzle"
+              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-teal-300 transition-all text-center"
+            >
+              <div className="text-4xl mb-3">🧩</div>
+              <h3 className="font-bold text-slate-900 mb-2">Сөйлем жұмбағы</h3>
+              <p className="text-sm text-slate-600 mb-3">Сөйлемді дұрыс ретпен құрастыру</p>
+              <div className="text-teal-600 font-semibold text-sm">Ойынға кіру →</div>
             </Link>
           </div>
         </div>

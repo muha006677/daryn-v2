@@ -4,8 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
+import MonkeyDuelRace from '@/components/MonkeyDuelRace'
 
 type GameState = 'menu' | 'playing' | 'finished'
+type CurrentTeam = 'A' | 'B'
 
 export default function MonkeyRacePage() {
   const [gameState, setGameState] = useState<GameState>('menu')
@@ -16,9 +18,20 @@ export default function MonkeyRacePage() {
   
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [team1Score, setTeam1Score] = useState(0)
-  const [team2Score, setTeam2Score] = useState(0)
+  const [currentTeam, setCurrentTeam] = useState<CurrentTeam>('A')
+  
+  // 计分：solvedCount 和 correctCount
+  const [team1Solved, setTeam1Solved] = useState(0)
+  const [team1Correct, setTeam1Correct] = useState(0)
+  const [team2Solved, setTeam2Solved] = useState(0)
+  const [team2Correct, setTeam2Correct] = useState(0)
+  
+  // 用于显示的总分（优先使用 correctCount，否则使用 solvedCount）
+  const team1Score = team1Correct > 0 ? team1Correct : team1Solved
+  const team2Score = team2Correct > 0 ? team2Correct : team2Solved
+  
   const [showAnswer, setShowAnswer] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
 
   const currentQuestion = questions[currentQuestionIndex]
 
@@ -27,8 +40,12 @@ export default function MonkeyRacePage() {
     setError(null)
     setShowAnswer(false)
     setCurrentQuestionIndex(0)
-    setTeam1Score(0)
-    setTeam2Score(0)
+    setCurrentTeam('A')
+    setTeam1Solved(0)
+    setTeam1Correct(0)
+    setTeam2Solved(0)
+    setTeam2Correct(0)
+    setSelectedAnswer(null)
     setFallbackUsed(false)
 
     try {
@@ -71,27 +88,59 @@ export default function MonkeyRacePage() {
     }
   }
 
-  const addTeam1Point = () => {
-    if (team1Score < 10) {
-      setTeam1Score(team1Score + 1)
+  // 检查答案是否正确
+  const checkAnswer = (userAnswer: string, correctAnswer: string): boolean => {
+    // 简单匹配：去除空格和大小写
+    const normalized = (str: string) => str.trim().toLowerCase()
+    return normalized(userAnswer) === normalized(correctAnswer)
+  }
+
+  // 提交答案
+  const submitAnswer = (answer: string) => {
+    if (!currentQuestion) return
+    
+    setSelectedAnswer(answer)
+    setShowAnswer(true)
+    
+    const isCorrect = checkAnswer(answer, currentQuestion.answer || '')
+    
+    // 根据当前队伍更新分数
+    if (currentTeam === 'A') {
+      setTeam1Solved(prev => prev + 1)
+      if (isCorrect) {
+        setTeam1Correct(prev => prev + 1)
+      }
+    } else {
+      setTeam2Solved(prev => prev + 1)
+      if (isCorrect) {
+        setTeam2Correct(prev => prev + 1)
+      }
     }
+  }
+
+  // 手动加分（保留原有功能）
+  const addTeam1Point = () => {
+    setTeam1Solved(prev => prev + 1)
+    setTeam1Correct(prev => prev + 1)
   }
 
   const addTeam2Point = () => {
-    if (team2Score < 10) {
-      setTeam2Score(team2Score + 1)
-    }
+    setTeam2Solved(prev => prev + 1)
+    setTeam2Correct(prev => prev + 1)
   }
 
   const addBothPoints = () => {
-    if (team1Score < 10) setTeam1Score(team1Score + 1)
-    if (team2Score < 10) setTeam2Score(team2Score + 1)
+    setTeam1Solved(prev => prev + 1)
+    setTeam1Correct(prev => prev + 1)
+    setTeam2Solved(prev => prev + 1)
+    setTeam2Correct(prev => prev + 1)
   }
 
   const nextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
       setShowAnswer(false)
+      setSelectedAnswer(null)
     } else {
       setGameState('finished')
     }
@@ -101,31 +150,15 @@ export default function MonkeyRacePage() {
     setGameState('menu')
     setQuestions([])
     setCurrentQuestionIndex(0)
-    setTeam1Score(0)
-    setTeam2Score(0)
+    setCurrentTeam('A')
+    setTeam1Solved(0)
+    setTeam1Correct(0)
+    setTeam2Solved(0)
+    setTeam2Correct(0)
     setShowAnswer(false)
+    setSelectedAnswer(null)
   }
 
-  const renderProgress = (score: number, teamNumber: number) => {
-    const steps = []
-    for (let i = 0; i <= 10; i++) {
-      steps.push(
-        <div
-          key={i}
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-            i <= score
-              ? teamNumber === 1
-                ? 'bg-green-500 text-white'
-                : 'bg-blue-500 text-white'
-              : 'bg-slate-200 text-slate-400'
-          }`}
-        >
-          {i}
-        </div>
-      )
-    }
-    return steps
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-slate-50 py-8">
@@ -176,26 +209,46 @@ export default function MonkeyRacePage() {
 
         {gameState === 'playing' && currentQuestion && (
           <div className="space-y-6">
-            {/* Score Display */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl shadow-lg border-2 border-green-200 p-6">
-                <h3 className="text-2xl font-bold text-green-700 mb-4 text-center">1-топ</h3>
-                <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
-                  {renderProgress(team1Score, 1)}
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-green-600">{team1Score} / 10</div>
+            {/* 对战可视化 */}
+            <MonkeyDuelRace
+              teamAScore={team1Score}
+              teamBScore={team2Score}
+              targetLead={5}
+            />
+
+            {/* 队伍切换 */}
+            <div className="bg-white rounded-xl shadow-md border-2 border-slate-200 p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-slate-700">Қазіргі топ:</span>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setCurrentTeam('A')}
+                    className={`px-6 py-2 rounded-xl font-bold transition-all ${
+                      currentTeam === 'A'
+                        ? 'bg-green-500 text-white shadow-lg scale-105'
+                        : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                    }`}
+                  >
+                    1-топ
+                  </button>
+                  <button
+                    onClick={() => setCurrentTeam('B')}
+                    className={`px-6 py-2 rounded-xl font-bold transition-all ${
+                      currentTeam === 'B'
+                        ? 'bg-blue-500 text-white shadow-lg scale-105'
+                        : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                    }`}
+                  >
+                    2-топ
+                  </button>
                 </div>
               </div>
-
-              <div className="bg-white rounded-2xl shadow-lg border-2 border-blue-200 p-6">
-                <h3 className="text-2xl font-bold text-blue-700 mb-4 text-center">2-топ</h3>
-                <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
-                  {renderProgress(team2Score, 2)}
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-blue-600">{team2Score} / 10</div>
-                </div>
+              <div className="mt-3 text-sm text-slate-500 text-center">
+                {currentTeam === 'A' ? (
+                  <span>1-топ жауап береді</span>
+                ) : (
+                  <span>2-топ жауап береді</span>
+                )}
               </div>
             </div>
 
@@ -210,40 +263,109 @@ export default function MonkeyRacePage() {
                   {currentQuestion.prompt || '—'}
                 </p>
 
-                {showAnswer && currentQuestion.answer && (
-                  <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 text-center mb-6">
-                    <p className="text-sm text-emerald-600 mb-2 font-semibold">Жауабы:</p>
-                    <p className="text-2xl font-bold text-emerald-700">{currentQuestion.answer}</p>
+                {/* 如果是 MCQ，显示选项 */}
+                {currentQuestion.options && currentQuestion.options.length > 0 ? (
+                  <div className="space-y-3 mb-6">
+                    {currentQuestion.options.map((option, idx) => {
+                      const optionLetter = idx === 0 ? 'A' : idx === 1 ? 'B' : 'C'
+                      const isSelected = selectedAnswer === optionLetter
+                      const isCorrect = showAnswer && optionLetter === currentQuestion.answer
+                      const isWrong = showAnswer && isSelected && optionLetter !== currentQuestion.answer
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => !showAnswer && submitAnswer(optionLetter)}
+                          disabled={showAnswer}
+                          className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                            isCorrect
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-900'
+                              : isWrong
+                              ? 'bg-red-50 border-red-500 text-red-900'
+                              : isSelected
+                              ? 'bg-blue-50 border-blue-500 text-blue-900'
+                              : 'bg-slate-50 border-slate-300 text-slate-800 hover:border-slate-400 hover:bg-slate-100'
+                          } ${showAnswer ? 'cursor-default' : 'cursor-pointer'}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                              isCorrect
+                                ? 'bg-emerald-500 text-white'
+                                : isWrong
+                                ? 'bg-red-500 text-white'
+                                : isSelected
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-slate-300 text-slate-700'
+                            }`}>
+                              {optionLetter}
+                            </span>
+                            <span className="flex-1 text-lg">{option}</span>
+                            {isCorrect && (
+                              <span className="text-emerald-600 font-bold">✓ Дұрыс</span>
+                            )}
+                            {isWrong && (
+                              <span className="text-red-600 font-bold">✗ Қате</span>
+                            )}
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
+                ) : (
+                  // 非 MCQ 题目，显示答案输入或手动计分
+                  <>
+                    {showAnswer && currentQuestion.answer && (
+                      <div className={`border-2 rounded-xl p-6 text-center mb-6 ${
+                        selectedAnswer && checkAnswer(selectedAnswer, currentQuestion.answer)
+                          ? 'bg-emerald-50 border-emerald-200'
+                          : selectedAnswer
+                          ? 'bg-red-50 border-red-200'
+                          : 'bg-slate-50 border-slate-200'
+                      }`}>
+                        <p className="text-sm text-slate-600 mb-2 font-semibold">Дұрыс жауап:</p>
+                        <p className="text-2xl font-bold text-slate-700">{currentQuestion.answer}</p>
+                        {selectedAnswer && (
+                          <p className="mt-2 text-sm">
+                            {checkAnswer(selectedAnswer, currentQuestion.answer) ? (
+                              <span className="text-emerald-600">✓ Дұрыс!</span>
+                            ) : (
+                              <span className="text-red-600">✗ Қате</span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => setShowAnswer(!showAnswer)}
+                      className="w-full py-4 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 font-medium text-lg transition-colors mb-6"
+                    >
+                      {showAnswer ? '👁 Жауапты жасыру' : '👁 Жауапты көрсету'}
+                    </button>
+
+                    {/* 手动计分按钮（备用） */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <button
+                        onClick={addTeam1Point}
+                        className="py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all text-lg"
+                      >
+                        1-топ +1
+                      </button>
+                      <button
+                        onClick={addBothPoints}
+                        className="py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all text-lg"
+                      >
+                        Екеуі де
+                      </button>
+                      <button
+                        onClick={addTeam2Point}
+                        className="py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-all text-lg"
+                      >
+                        2-топ +1
+                      </button>
+                    </div>
+                  </>
                 )}
-
-                <button
-                  onClick={() => setShowAnswer(!showAnswer)}
-                  className="w-full py-4 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 font-medium text-lg transition-colors mb-6"
-                >
-                  {showAnswer ? '👁 Жауапты жасыру' : '👁 Жауапты көрсету'}
-                </button>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <button
-                    onClick={addTeam1Point}
-                    className="py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all text-lg"
-                  >
-                    1-топ +1
-                  </button>
-                  <button
-                    onClick={addBothPoints}
-                    className="py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all text-lg"
-                  >
-                    Екеуі де
-                  </button>
-                  <button
-                    onClick={addTeam2Point}
-                    className="py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-all text-lg"
-                  >
-                    2-топ +1
-                  </button>
-                </div>
               </div>
             </div>
 
@@ -271,13 +393,26 @@ export default function MonkeyRacePage() {
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="bg-green-50 rounded-xl p-6">
                 <p className="text-lg font-medium text-green-700 mb-2">1-топ</p>
-                <p className="text-4xl font-bold text-green-600">{team1Score} / 10</p>
+                <p className="text-4xl font-bold text-green-600">{team1Score}</p>
+                <p className="text-sm text-slate-500 mt-2">
+                  Дұрыс: {team1Correct} | Жалпы: {team1Solved}
+                </p>
               </div>
               <div className="bg-blue-50 rounded-xl p-6">
                 <p className="text-lg font-medium text-blue-700 mb-2">2-топ</p>
-                <p className="text-4xl font-bold text-blue-600">{team2Score} / 10</p>
+                <p className="text-4xl font-bold text-blue-600">{team2Score}</p>
+                <p className="text-sm text-slate-500 mt-2">
+                  Дұрыс: {team2Correct} | Жалпы: {team2Solved}
+                </p>
               </div>
             </div>
+            
+            {/* 最终对战可视化 */}
+            <MonkeyDuelRace
+              teamAScore={team1Score}
+              teamBScore={team2Score}
+              targetLead={5}
+            />
             <button
               onClick={resetGame}
               className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg rounded-xl hover:opacity-90 transition-all"
