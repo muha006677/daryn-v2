@@ -1,5 +1,6 @@
 // 30题竞赛模式 - 题库引擎
-import type { Question } from '../gameBanks'
+import type { Question } from '@/app/api/generate-question/route'
+import type { Question as LocalQuestion } from '../gameBanks'
 import { getMathCompetitionQuestions } from './mathLocalBank'
 import { getEnglishCompetitionQuestions } from './englishLocalBank'
 import { getKazakhLangCompetitionQuestions } from './kazakhLangLocalBank'
@@ -14,6 +15,11 @@ export type Subject =
   | 'kazakh_lit'
   | 'natural_science'
   | 'world_studies'
+
+export type CompetitionQuestion = Question & {
+  subject: Subject
+  subjectName: string
+}
 
 export interface SubjectConfig {
   subject: Subject
@@ -40,7 +46,7 @@ export const DEFAULT_COMPETITION_CONFIG: CompetitionConfig = {
 }
 
 // 从本地题库获取题目
-function getSubjectQuestions(subject: Subject, grade: number): Question[] {
+function getSubjectQuestions(subject: Subject, grade: number): LocalQuestion[] {
   switch (subject) {
     case 'math':
       return getMathCompetitionQuestions(grade)
@@ -69,7 +75,7 @@ function randomSelect<T>(array: T[], count: number): T[] {
 export function generateCompetitionQuestions(
   grade: number,
   config: CompetitionConfig = DEFAULT_COMPETITION_CONFIG
-): Array<Question & { subject: Subject; subjectName: string }> {
+): CompetitionQuestion[] {
   const allQuestions: CompetitionQuestion[] = []
   const warnings: string[] = []
 
@@ -109,13 +115,15 @@ export function generateCompetitionQuestions(
       const finalOptions = options.length > 0 ? options : ['A', 'B', 'C', 'D'].slice(0, 4)
 
       const result: CompetitionQuestion = {
-        q: q.q,
-        a: answer,
-        meta: q.meta,
+        id: `comp-${subjectConfig.subject}-${Date.now()}-${Math.random()}`,
+        domain: subjectConfig.subject,
+        grade: grade,
+        type: 'mcq',
         prompt,
         options: finalOptions,
         answer: answer,
         explanation: q.meta?.explanation,
+        meta: q.meta,
         subject: subjectConfig.subject,
         subjectName: subjectConfig.name,
       }
@@ -132,7 +140,7 @@ export function generateCompetitionQuestions(
     console.warn(`[Competition] 总题数不足，需要补充 ${needed} 题`)
 
     // 从所有科目中随机抽取补充
-    const allSubjectQuestions: Question[] = []
+    const allSubjectQuestions: LocalQuestion[] = []
     for (const subjectConfig of config.subjects) {
       allSubjectQuestions.push(...getSubjectQuestions(subjectConfig.subject, grade))
     }
@@ -155,13 +163,15 @@ export function generateCompetitionQuestions(
       const finalOptions = options.length > 0 ? options : ['A', 'B', 'C', 'D'].slice(0, 4)
 
       const result: CompetitionQuestion = {
-        q: q.q,
-        a: answer,
-        meta: q.meta,
+        id: `comp-math-${Date.now()}-${Math.random()}`,
+        domain: 'math',
+        grade: grade,
+        type: 'mcq',
         prompt,
         options: finalOptions,
         answer: answer,
         explanation: q.meta?.explanation,
+        meta: q.meta,
         subject: 'math', // 默认归类
         subjectName: 'Математика',
       }
