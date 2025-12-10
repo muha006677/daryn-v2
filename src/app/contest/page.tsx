@@ -33,13 +33,22 @@ const directions: DirectionInfo[] = [
     href: '/contest/math-ultra',
   },
   {
-    id: 'kaz-lang-lit',
-    name: 'Қазақ тілі мен әдебиеті',
-    icon: '📚',
+    id: 'kaz-lang',
+    name: 'Қазақ тілі',
+    icon: '📖',
     gradient: 'from-emerald-500 to-teal-500',
-    badge: 'Тіл мен әдебиет',
-    description: 'Шығармашылық және аналитикалық дарындылықты анықтау',
-    href: '/contest/kaz-lang-lit',
+    badge: 'Шығармашылық/Тіл-әдебиет',
+    description: 'Шығармашылық дарындылықты анықтау',
+    href: '/contest/kaz-lang',
+  },
+  {
+    id: 'kaz-lit',
+    name: 'Қазақ әдебиеті',
+    icon: '📚',
+    gradient: 'from-amber-500 to-orange-500',
+    badge: 'Шығармашылық/Тіл-әдебиет',
+    description: 'Аналитикалық дарындылықты анықтау',
+    href: '/contest/kaz-lit',
   },
   {
     id: 'kaz-retell',
@@ -124,7 +133,7 @@ export default function ContestPage() {
                 <p className="text-slate-600 text-sm mb-4 leading-relaxed">{dir.description}</p>
                 
                 <div className="flex items-center justify-between mt-6">
-                  <span className="text-xs text-slate-400 font-medium">{dir.id === 'kaz-lang-lit' ? '16 тапсырма' : '5 тапсырма'}</span>
+                  <span className="text-xs text-slate-400 font-medium">{(dir.id === 'kaz-lang' || dir.id === 'kaz-lit') ? '8 тапсырма' : '5 тапсырма'}</span>
                   <span className={`text-white font-bold px-5 py-2 rounded-xl bg-gradient-to-r ${dir.gradient} group-hover:scale-105 transition-transform shadow-lg`}>
                     Кіру
                   </span>

@@ -3,58 +3,42 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
-import QuestionCard from '@/components/QuestionCard'
-import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
+import MCQCard from '@/components/MCQCard'
+import { getKazLangQuestions } from '@/lib/kazLangLocalBank'
 
-export default function KazLangLitPage() {
+export default function KazLangPage() {
   const [grade, setGrade] = useState<string>('2')
   const [isLoading, setIsLoading] = useState(true)
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [fallbackUsed, setFallbackUsed] = useState(false)
 
-  const loadQuestions = useCallback(async () => {
+  const loadQuestions = useCallback(() => {
     setIsLoading(true)
     setError(null)
     setCurrentIndex(0)
     setShowAnswer(false)
-    setFallbackUsed(false)
 
     try {
-      const result = await getQuestions({
-        domain: 'kaz_lang_lit',
+      // 从本地题库获取结构化 MCQ 题目
+      const localQuestions = getKazLangQuestions(parseInt(grade))
+      
+      // 转换为 API Question 格式
+      const apiQuestions: Question[] = localQuestions.map((q, idx) => ({
+        id: `kaz-lang-${grade}-${idx}`,
+        domain: 'kaz_lang',
         grade: parseInt(grade),
-        count: 20,
-        seed: `kaz-lang-lit-${Date.now()}`,
-      })
+        type: 'mcq' as const,
+        prompt: q.prompt,
+        options: q.options,
+        answer: q.answer,
+        explanation: q.explanation,
+      }))
 
-      if (result.length === 0) {
-        setError('Тапсырмалар табылмады. Қайта көріңіз.')
-      } else {
-        setQuestions(result)
-        if (result.length < 20) {
-          setFallbackUsed(true)
-        }
-      }
+      setQuestions(apiQuestions)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
-      setError(errorMessage)
-      try {
-        const localQuestions = getLocalQuestionsSync({
-          domain: 'kaz_lang_lit',
-          grade: parseInt(grade),
-          count: 20,
-        })
-        if (localQuestions.length > 0) {
-          setQuestions(localQuestions)
-          setFallbackUsed(true)
-          setError('API қате, жергілікті банк қолданылды')
-        }
-      } catch (fallbackErr) {
-        setError(errorMessage)
-      }
+      setError(err instanceof Error ? err.message : 'Қате орын алды')
     } finally {
       setIsLoading(false)
     }
@@ -82,32 +66,10 @@ export default function KazLangLitPage() {
           Диагностикаға қайту
         </Link>
 
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
-          <p className="text-blue-800 font-semibold mb-2">ℹ️ Бұл бет жаңартылды</p>
-          <p className="text-blue-700 text-sm mb-4">
-            «Қазақ тілі мен әдебиеті» енді екі бөлек бетке бөлінді:
-          </p>
-          <div className="flex gap-3">
-            <Link
-              href="/contest/kaz-lang"
-              className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-all text-center"
-            >
-              📖 Қазақ тілі
-            </Link>
-            <Link
-              href="/contest/kaz-lit"
-              className="flex-1 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-all text-center"
-            >
-              📚 Қазақ әдебиеті
-            </Link>
-          </div>
-        </div>
-
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">📚</div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Қазақ тілі мен әдебиеті</h1>
-          <p className="text-slate-600">Шығармашылық және аналитикалық дарындылықты анықтау</p>
-          <p className="text-sm text-slate-500 mt-2">(Ескі формат - жаңа беттерді пайдаланыңыз)</p>
+          <div className="text-5xl mb-4">📖</div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Қазақ тілі</h1>
+          <p className="text-slate-600">Шығармашылық дарындылықты анықтау</p>
         </div>
 
         {isLoading ? (
@@ -133,11 +95,6 @@ export default function KazLangLitPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {fallbackUsed && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 text-sm text-center">
-                ⚠️ API қате, жергілікті банк қолданылды. Кейбір тапсырмалар жеткіліксіз болуы мүмкін.
-              </div>
-            )}
             <div className="flex items-center justify-center gap-3 bg-white rounded-xl p-4 shadow-sm">
               <label className="font-medium text-slate-700">Сынып:</label>
               <select
@@ -158,7 +115,7 @@ export default function KazLangLitPage() {
             </div>
 
             {currentQuestion && (
-              <QuestionCard
+              <MCQCard
                 question={currentQuestion}
                 showAnswer={showAnswer}
                 onToggleAnswer={() => setShowAnswer(!showAnswer)}
@@ -195,3 +152,4 @@ export default function KazLangLitPage() {
     </div>
   )
 }
+
