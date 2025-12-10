@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import QuestionCard from '@/components/QuestionCard'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 export default function MathUltraPage() {
   const [grade, setGrade] = useState<string>('2')
@@ -12,32 +13,48 @@ export default function MathUltraPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
 
   const loadQuestions = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     setCurrentIndex(0)
     setShowAnswer(false)
+    setFallbackUsed(false)
 
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grade: parseInt(grade),
-          domain: 'math_ultra',
-          difficulty: 'ultra',
-          count: 5,
-          seed: `math-ultra-${Date.now()}`,
-        }),
+      const result = await getQuestions({
+        domain: 'math_ultra',
+        grade: parseInt(grade),
+        count: 5,
+        seed: `math-ultra-${Date.now()}`,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Қате')
-
-      setQuestions(data.questions || [])
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        if (result.length < 5) {
+          setFallbackUsed(true)
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'math_ultra',
+          grade: parseInt(grade),
+          count: 5,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }

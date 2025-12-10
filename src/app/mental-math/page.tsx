@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import QuestionCard from '@/components/QuestionCard'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 export default function MentalMathPage() {
   const [grade, setGrade] = useState<string>('2')
@@ -12,6 +13,7 @@ export default function MentalMathPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
 
   useEffect(() => {
     if (questions.length > 0) {
@@ -24,26 +26,41 @@ export default function MentalMathPage() {
     setError(null)
     setCurrentIndex(0)
     setShowAnswer(false)
+    setFallbackUsed(false)
 
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grade: parseInt(grade),
-          domain: 'math_ultra',
-          difficulty: 'ultra',
-          count: 10,
-          seed: `mental-math-${Date.now()}`,
-        }),
+      const result = await getQuestions({
+        domain: 'mental-math',
+        grade: parseInt(grade),
+        count: 10,
+        seed: `mental-math-${Date.now()}`,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Қате')
-
-      setQuestions(data.questions || [])
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        if (result.length < 10) {
+          setFallbackUsed(true)
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'mental-math',
+          grade: parseInt(grade),
+          count: 10,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }

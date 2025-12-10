@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import QuestionCard from '@/components/QuestionCard'
-import { getKazLangLitQuestions } from '@/lib/kazLangLitLocalBank'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 export default function KazLangLitPage() {
   const [grade, setGrade] = useState<string>('2')
@@ -13,39 +13,48 @@ export default function KazLangLitPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
 
   const loadQuestions = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     setCurrentIndex(0)
     setShowAnswer(false)
+    setFallbackUsed(false)
 
     try {
-      // Local fallback - use local bank
-      const localQuestions = getKazLangLitQuestions(parseInt(grade))
-      
-      // Convert local Question format to API Question format
-      const apiQuestions: Question[] = localQuestions.map((q, idx) => {
-        const lines = q.q.split('\n')
-        const promptLines = lines.filter(line => !/^[A-C]\)/.test(line) && !/^Дұрыс жауап/.test(line))
-        const options = lines.filter(line => /^[A-C]\)/.test(line)).map(line => line.replace(/^[A-C]\)\s*/, ''))
-        
-        return {
-          id: `kaz-lang-lit-${grade}-${idx}`,
-          domain: 'kaz_lang_lit',
-          grade: parseInt(grade),
-          type: 'mcq' as const,
-          prompt: promptLines.join('\n'),
-          options: options.length > 0 ? options : undefined,
-          answer: q.a,
-          explanation: `Дұрыс жауап: ${q.a}`,
-          meta: q.meta,
-        }
+      const result = await getQuestions({
+        domain: 'kaz_lang_lit',
+        grade: parseInt(grade),
+        count: 20,
+        seed: `kaz-lang-lit-${Date.now()}`,
       })
 
-      setQuestions(apiQuestions)
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        if (result.length < 20) {
+          setFallbackUsed(true)
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'kaz_lang_lit',
+          grade: parseInt(grade),
+          count: 20,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -102,6 +111,11 @@ export default function KazLangLitPage() {
           </div>
         ) : (
           <div className="space-y-6">
+            {fallbackUsed && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 text-sm text-center">
+                ⚠️ API қате, жергілікті банк қолданылды. Кейбір тапсырмалар жеткіліксіз болуы мүмкін.
+              </div>
+            )}
             <div className="flex items-center justify-center gap-3 bg-white rounded-xl p-4 shadow-sm">
               <label className="font-medium text-slate-700">Сынып:</label>
               <select

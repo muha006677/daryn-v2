@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 export default function StoryCardsPage() {
   const [grade, setGrade] = useState<string>('2')
@@ -11,6 +12,7 @@ export default function StoryCardsPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scores, setScores] = useState<Record<number, { creativity: number; completeness: number }>>({})
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
 
   useEffect(() => {
     if (questions.length > 0) {
@@ -23,26 +25,41 @@ export default function StoryCardsPage() {
     setError(null)
     setCurrentIndex(0)
     setScores({})
+    setFallbackUsed(false)
 
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grade: parseInt(grade),
-          domain: 'mixed',
-          difficulty: 'ultra',
-          count: 10,
-          seed: `story-cards-${Date.now()}`,
-        }),
+      const result = await getQuestions({
+        domain: 'story-cards',
+        grade: parseInt(grade),
+        count: 10,
+        seed: `story-cards-${Date.now()}`,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Қате')
-
-      setQuestions(data.questions || [])
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        if (result.length < 10) {
+          setFallbackUsed(true)
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'story-cards',
+          grade: parseInt(grade),
+          count: 10,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 type GameState = 'menu' | 'playing' | 'finished'
 
@@ -11,6 +12,7 @@ export default function MonkeyRacePage() {
   const [grade, setGrade] = useState<string>('2')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
   
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -27,31 +29,43 @@ export default function MonkeyRacePage() {
     setCurrentQuestionIndex(0)
     setTeam1Score(0)
     setTeam2Score(0)
+    setFallbackUsed(false)
 
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grade: parseInt(grade),
-          domain: 'mixed',
-          difficulty: 'ultra',
-          count: 10,
-          seed: `monkey-race-${Date.now()}`,
-        }),
+      const result = await getQuestions({
+        domain: 'mixed',
+        grade: parseInt(grade),
+        count: 10,
+        seed: `monkey-race-${Date.now()}`,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Қате')
-
-      if (!data.questions || !Array.isArray(data.questions)) {
-        throw new Error('Сұрақтар жүктелмеді')
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        setGameState('playing')
+        if (result.length < 10) {
+          setFallbackUsed(true)
+        }
       }
-
-      setQuestions(data.questions)
-      setGameState('playing')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды. Қайта көріңіз.')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды. Қайта көріңіз.'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'mixed',
+          grade: parseInt(grade),
+          count: 10,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setGameState('playing')
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }

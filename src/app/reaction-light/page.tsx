@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
+import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
 
 export default function ReactionLightPage() {
   const [grade, setGrade] = useState<string>('2')
@@ -12,6 +13,7 @@ export default function ReactionLightPage() {
   const [score, setScore] = useState(0)
   const [round, setRound] = useState(1)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUsed, setFallbackUsed] = useState(false)
 
   const nextRound = useCallback(() => {
     if (questions.length > 0) {
@@ -33,26 +35,41 @@ export default function ReactionLightPage() {
     setScore(0)
     setRound(1)
     setCurrentColor('')
+    setFallbackUsed(false)
 
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grade: parseInt(grade),
-          domain: 'reaction',
-          difficulty: 'ultra',
-          count: 10,
-          seed: `reaction-light-${Date.now()}`,
-        }),
+      const result = await getQuestions({
+        domain: 'reaction-light',
+        grade: parseInt(grade),
+        count: 10,
+        seed: `reaction-light-${Date.now()}`,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Қате')
-
-      setQuestions(data.questions || [])
+      if (result.length === 0) {
+        setError('Тапсырмалар табылмады. Қайта көріңіз.')
+      } else {
+        setQuestions(result)
+        if (result.length < 10) {
+          setFallbackUsed(true)
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Қате орын алды')
+      const errorMessage = err instanceof Error ? err.message : 'Қате орын алды'
+      setError(errorMessage)
+      try {
+        const localQuestions = getLocalQuestionsSync({
+          domain: 'reaction-light',
+          grade: parseInt(grade),
+          count: 10,
+        })
+        if (localQuestions.length > 0) {
+          setQuestions(localQuestions)
+          setFallbackUsed(true)
+          setError('API қате, жергілікті банк қолданылды')
+        }
+      } catch (fallbackErr) {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }
