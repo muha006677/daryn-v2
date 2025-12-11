@@ -6,8 +6,12 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
-  title: 'Daryn V2 — Мұғалімдерге арналған AI көмекші',
-  description: 'Сабақ жоспарлары, жұмыс парақтары және олимпиада тапсырмаларын жасаңыз',
+  title: 'Shokhan Daryny — Оқушының дарындылық бағытын анықтау жүйесі',
+  description: 'Оқушылардың артықшылық бағыттарын анықтауға арналған жүйе',
+  openGraph: {
+    title: 'Shokhan Daryny',
+    description: 'Оқушылардың артықшылық бағыттарын анықтауға арналған жүйе',
+  },
 }
 
 export default function RootLayout({
@@ -24,9 +28,9 @@ export default function RootLayout({
             <div className="flex justify-between items-center h-16">
               <Link href="/" className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">D</span>
+                  <span className="text-white font-bold text-lg">S</span>
                 </div>
-                <span className="font-bold text-xl text-slate-800">Daryn</span>
+                <span className="font-bold text-xl text-slate-800">Shokhan Daryny</span>
               </Link>
               <div className="hidden sm:flex items-center gap-6">
                 <Link href="/lesson-plan" className="text-slate-600 hover:text-indigo-600 transition-colors">
@@ -54,16 +58,16 @@ export default function RootLayout({
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">D</span>
+                  <span className="text-white font-bold text-lg">S</span>
                 </div>
-                <span className="font-bold text-xl text-white">Daryn</span>
+                <span className="font-bold text-xl text-white">Shokhan Daryny</span>
               </div>
               <p className="text-sm text-center md:text-right">
-                Қазақстан мұғалімдеріне арналған жасанды интеллект көмекшісі
+                Оқушының дарындылық бағытын анықтау жүйесі
               </p>
             </div>
             <div className="mt-8 pt-8 border-t border-slate-800 text-center text-sm">
-              © 2024 Daryn. Барлық құқықтар қорғалған.
+              © 2024 Shokhan Daryny. Барлық құқықтар қорғалған.
             </div>
           </div>
         </footer>

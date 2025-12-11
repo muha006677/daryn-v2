@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import { generateCompetitionQuestions, DEFAULT_COMPETITION_CONFIG, type Subject, type CompetitionQuestion } from '@/lib/competition/competitionEngine'
+import { addResult } from '@/lib/results/resultsStore'
+import type { GameResult } from '@/types/results'
 
 type GameState = 'menu' | 'playing' | 'finished'
 
@@ -124,6 +126,38 @@ export default function Competition30Page() {
   }
 
   const stats = gameState === 'finished' ? calculateStats() : null
+
+  // 保存结果
+  useEffect(() => {
+    if (gameState === 'finished' && answerRecords.length > 0 && stats) {
+      // 按学科聚合
+      const domainStats: Record<string, { correct: number; total: number }> = {}
+      answerRecords.forEach(record => {
+        const domain = record.subject
+        if (!domainStats[domain]) {
+          domainStats[domain] = { correct: 0, total: 0 }
+        }
+        domainStats[domain].total += 1
+        if (record.isCorrect) {
+          domainStats[domain].correct += 1
+        }
+      })
+
+      // 为每个学科保存结果
+      Object.entries(domainStats).forEach(([domain, stats]) => {
+        const domainAccuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0
+        const result: GameResult = {
+          gameId: `competition-30-${Date.now()}-${domain}`,
+          domain: domain,
+          correct: stats.correct,
+          total: stats.total,
+          accuracy: domainAccuracy,
+          createdAt: new Date().toISOString(),
+        }
+        addResult(result)
+      })
+    }
+  }, [gameState, answerRecords, stats])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-slate-50 py-8">

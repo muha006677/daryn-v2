@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { getTrueFalseQuestions, type TrueFalseQuestion } from '@/lib/newGamesBanks'
+import { addResult } from '@/lib/results/resultsStore'
+import type { GameResult } from '@/types/results'
 
 type GameState = 'menu' | 'playing' | 'finished'
 type GameMode = 'count' | 'time'
@@ -65,6 +67,26 @@ export default function QuickJudgePage() {
       return () => clearInterval(timer)
     }
   }, [gameState, gameMode, timeLeft])
+
+  // 保存结果
+  useEffect(() => {
+    if (gameState === 'finished' && currentQuestionIndex > 0) {
+      const totalQuestionsCount = gameMode === 'count' ? 20 : currentQuestionIndex + 1
+      const accuracy = totalQuestionsCount > 0 ? Math.round((correctCount / totalQuestionsCount) * 100) : 0
+      const timeSpent = gameMode === 'time' ? 60 - timeLeft : undefined
+
+      const result: GameResult = {
+        gameId: `quick-judge-${Date.now()}`,
+        domain: 'quick-judge',
+        correct: correctCount,
+        total: totalQuestionsCount,
+        accuracy: accuracy,
+        timeSpentSec: timeSpent,
+        createdAt: new Date().toISOString(),
+      }
+      addResult(result)
+    }
+  }, [gameState, currentQuestionIndex, correctCount, gameMode, timeLeft])
 
   const handleAnswer = (answer: 'Дұрыс' | 'Бұрыс') => {
     if (!currentQuestion || showFeedback) return

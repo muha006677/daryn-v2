@@ -1,13 +1,26 @@
+'use client'
+
 import Link from 'next/link'
+import { useStudentName } from '@/hooks/useStudentName'
 
 export default function Home() {
+  const { name } = useStudentName()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-slate-900">Daryn V2</h1>
-          <p className="text-slate-600 mt-1">Мұғалімдерге арналған AI көмекшісі</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Shokhan Daryny</h1>
+            <p className="text-slate-600 mt-1">Оқушының дарындылық бағытын анықтау жүйесі</p>
+          </div>
+          {name && (
+            <div className="text-right">
+              <p className="text-sm text-slate-500">Сәлем,</p>
+              <p className="text-lg font-semibold text-indigo-600">{name}</p>
+            </div>
+          )}
         </div>
       </header>
 
@@ -15,7 +28,7 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            Сыныптық диагностика + Дарындылықты анықтау
+            Shokhan Daryny
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto">
             Оқушылардың артықшылық бағыттарын анықтауға арналған жүйе

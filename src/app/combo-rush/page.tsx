@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Question } from '@/app/api/generate-question/route'
 import { getQuestions, getLocalQuestionsSync } from '@/lib/questionEngine'
+import { addResult } from '@/lib/results/resultsStore'
+import type { GameResult } from '@/types/results'
 
 type GameState = 'menu' | 'playing' | 'finished'
 type TimeMode = 30 | 60 | 90
@@ -98,6 +100,26 @@ export default function ComboRushPage() {
       return () => clearInterval(timer)
     }
   }, [gameState, timeLeft])
+
+  // 保存结果
+  useEffect(() => {
+    if (gameState === 'finished' && currentQuestionIndex > 0) {
+      const totalQuestions = currentQuestionIndex + 1
+      const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0
+      const timeSpent = timeMode - timeLeft
+
+      const result: GameResult = {
+        gameId: `combo-rush-${Date.now()}`,
+        domain: 'combo-rush',
+        correct: correctCount,
+        total: totalQuestions,
+        accuracy: accuracy,
+        timeSpentSec: timeSpent,
+        createdAt: new Date().toISOString(),
+      }
+      addResult(result)
+    }
+  }, [gameState, currentQuestionIndex, correctCount, timeMode, timeLeft])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isCorrect) {
