@@ -6,13 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:hell": "tsx scripts/gen-hell-problems.ts --n=30",
+    "gen:hell80": "tsx scripts/gen-hell-problems.ts --n=80 --topics=NT,ALG,COMB,INEQ --out=data/hell80.json"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
+    "lucide-react": "^0.574.0",
     "next": "^14.2.0",
     "openai": "^6.10.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -23,6 +28,7 @@
     "eslint-config-next": "^14.2.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.0.0"
   }
 }
