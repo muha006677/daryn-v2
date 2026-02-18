@@ -116,7 +116,7 @@ id 格式：HELL-{topic}-{三位数字}，如 HELL-NT-001, HELL-ALG-002
 
   console.log(`  调用 API 生成 ${batchSize} 道题目...`);
   
-  const response = await client.beta.chat.completions.parse({
+  const response = await client.chat.completions.create({
     model,
     messages: [
       { role: 'system', content: buildSystemPrompt(topics) },
@@ -127,12 +127,24 @@ id 格式：HELL-{topic}-{三位数字}，如 HELL-NT-001, HELL-ALG-002
     max_tokens: 16000,
   });
 
-  const parsed = response.choices[0]?.message?.parsed;
-  if (!parsed || !parsed.problems) {
-    throw new Error('API 返回格式错误，未能解析出题目');
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('API 返回内容为空');
   }
 
-  return parsed.problems;
+  let parsedContent: unknown;
+  try {
+    parsedContent = JSON.parse(content);
+  } catch {
+    throw new Error('API 返回内容不是有效的 JSON');
+  }
+
+  const parseResult = HellProblemsResponseSchema.safeParse(parsedContent);
+  if (!parseResult.success) {
+    throw new Error(`API 返回格式错误: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data.problems;
 }
 
 // ============ 去重 ============
