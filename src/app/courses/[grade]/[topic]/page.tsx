@@ -185,7 +185,7 @@ export default function TopicPracticePage({ params }: PageProps) {
 
                 {/* Options */}
                 <div className="space-y-2 ml-11">
-                  {question.type === 'single' && question.options?.map((option, optIndex) => {
+                  {question.type === 'single' && question.options?.map((option: any, optIndex: number) => {
                     const isSelected = answers[question.id] === option
                     const isCorrect = showExplanations && option === question.correctAnswer
                     const isWrong = showExplanations && isSelected && option !== question.correctAnswer
@@ -216,7 +216,7 @@ export default function TopicPracticePage({ params }: PageProps) {
                     )
                   })}
 
-                  {question.type === 'multiple' && question.options?.map((option, optIndex) => {
+                  {question.type === 'multiple' && question.options?.map((option: any, optIndex: number) => {
                     const selectedOptions = (answers[question.id] as string[]) || []
                     const isSelected = selectedOptions.includes(option)
                     const correctAnswers = question.correctAnswer as string[]
