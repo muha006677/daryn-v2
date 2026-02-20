@@ -3,12 +3,10 @@
 import Link from 'next/link'
 import { useStudentName } from '@/hooks/useStudentName'
 import {
-  ModuleIcon,
   GameCardIcon,
   BrainCog,
   ClipboardCheck,
   Microscope,
-  FileText,
   Brain,
   Puzzle,
   Calculator,
@@ -25,306 +23,440 @@ import {
   Timer,
   Scale,
   Lightbulb,
-  STROKE_WIDTH,
+  GraduationCap,
+  Target,
+  BarChart3,
 } from '@/components/icons'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 
 export default function Home() {
   const { name } = useStudentName()
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 py-6">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 py-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">MathForce AI</h1>
-            <p className="text-slate-600 mt-1">Математикалық интеллектті динамикалық модельдеу платформасы</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" strokeWidth={1.75} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">MathForce AI</h1>
+            </div>
           </div>
           {name && (
             <div className="text-right">
               <p className="text-sm text-slate-500">Сәлем,</p>
-              <p className="text-lg font-semibold text-indigo-600">{name}</p>
+              <p className="text-base font-semibold text-slate-800">{name}</p>
             </div>
           )}
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+      <section className="bg-slate-950 py-32">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-8 tracking-tight">
             MathForce AI
           </h2>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Математикалық интеллектті динамикалық модельдеу және дарын әлеуетін анықтау платформасы
+          
+          <p className="text-xl sm:text-2xl text-slate-400 font-light mb-6">
+            Қабілетке негізделген білім моделі
           </p>
+          
+          <p className="text-base text-slate-500 max-w-2xl mx-auto mb-14">
+            Математикалық интеллектті құрылымдық талдау, адаптивті модельдеу және дарын әлеуетін стратегиялық анықтау
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/training"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-all"
+            >
+              Жүйені бастау
+              <ArrowRight className="w-5 h-5" strokeWidth={1.75} />
+            </Link>
+            <Link
+              href="/ubt"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-800 text-slate-200 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700 hover:border-slate-600 transition-all"
+            >
+              ҰБТ моделдеу
+              <ChevronRight className="w-5 h-5" strokeWidth={1.75} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Core Entry Cards */}
-      <section className="py-12 bg-white">
+      {/* System Architecture Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Link
-              href="/elite-modeling"
-              className="group bg-white border-2 border-slate-300 rounded-2xl p-8 hover:shadow-xl hover:border-slate-400 transition-all"
-            >
-              <ModuleIcon icon={BrainCog} bgColor="bg-slate-900" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 mt-4">Дарын әлеуетін стратегиялық модельдеу</h3>
-              <p className="text-slate-600 mb-4">
-                Көпқабатты аналитикалық құрылымдар арқылы интеллектуалдық болжау
-              </p>
-              <div className="text-slate-700 font-semibold">Модельдеуді бастау →</div>
-            </Link>
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-slate-500 tracking-[0.15em] uppercase mb-3">
+              Жүйе құрылымы
+            </p>
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Төрт деңгейлі модельдеу архитектурасы
+            </h3>
+          </div>
 
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Link
-              href="/contest/competition-30"
-              className="group bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-300 rounded-2xl p-8 hover:shadow-xl transition-all"
+              href="/training"
+              className="group relative bg-slate-50 border border-slate-200 rounded-xl p-8 hover:bg-white hover:shadow-lg hover:border-slate-300 transition-all"
             >
-              <ModuleIcon icon={ClipboardCheck} bgColor="bg-slate-900" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 mt-4">ҰБТға дайындық тест</h3>
-              <p className="text-slate-600 mb-4">
-                Ұлттық бірыңғай тестілеу симуляциясы: Оқу сауаттылығы, Логика, Қазақстан тарихы, Математика, Физика — 140 ұпай
+              <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
+                <GraduationCap className="w-7 h-7 text-emerald-600" strokeWidth={1.75} />
+              </div>
+              <div className="text-xs font-medium text-slate-400 tracking-wider uppercase mb-2">01</div>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">Бастауыш</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Адаптивті жаттығу және негізгі когнитивті дағдыларды дамыту
               </p>
-              <div className="text-slate-700 font-semibold">Тестті бастау →</div>
+              <div className="flex items-center text-emerald-600 font-medium text-sm group-hover:gap-2 transition-all">
+                <span>Бастау</span>
+                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={2} />
+              </div>
             </Link>
 
             <Link
               href="/micro-tests"
-              className="group bg-white border-2 border-slate-300 rounded-2xl p-8 hover:shadow-xl transition-all"
+              className="group relative bg-slate-50 border border-slate-200 rounded-xl p-8 hover:bg-white hover:shadow-lg hover:border-slate-300 transition-all"
             >
-              <ModuleIcon icon={Microscope} bgColor="bg-slate-800" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 mt-4">Интеллектуалды микросынақтар</h3>
-              <p className="text-slate-600 mb-4">
-                5–10 минуттық құрылымдалған микро-модульдер. Оқушылардың логикасы, есептеу дәлдігі және қысым астындағы тұрақтылығын жедел бағалауға арналған.
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                <Microscope className="w-7 h-7 text-blue-600" strokeWidth={1.75} />
+              </div>
+              <div className="text-xs font-medium text-slate-400 tracking-wider uppercase mb-2">02</div>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">Микродиагностика</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                5-10 минуттық құрылымдық диагностикалық модульдер
               </p>
-              <div className="text-slate-700 font-semibold">Модульдерді ашу →</div>
+              <div className="flex items-center text-blue-600 font-medium text-sm group-hover:gap-2 transition-all">
+                <span>Ашу</span>
+                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={2} />
+              </div>
             </Link>
 
             <Link
-              href="/worksheet"
-              className="group bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-8 hover:shadow-xl transition-all"
+              href="/contest/competition-30"
+              className="group relative bg-slate-50 border border-slate-200 rounded-xl p-8 hover:bg-white hover:shadow-lg hover:border-slate-300 transition-all"
             >
-              <ModuleIcon icon={FileText} bgColor="bg-blue-600" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 mt-4">Жаттығу парақтары</h3>
-              <p className="text-slate-600 mb-4">
-                Оқушыларға арналған жеке тапсырмалар мен жаттығулар
+              <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
+                <ClipboardCheck className="w-7 h-7 text-amber-600" strokeWidth={1.75} />
+              </div>
+              <div className="text-xs font-medium text-slate-400 tracking-wider uppercase mb-2">03</div>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">ҰБТ моделдеу</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Ұлттық тестілеу симуляциясы — 140 ұпай жүйесі
               </p>
-              <div className="text-blue-600 font-semibold">Ашу →</div>
+              <div className="flex items-center text-amber-600 font-medium text-sm group-hover:gap-2 transition-all">
+                <span>Тестті бастау</span>
+                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={2} />
+              </div>
             </Link>
 
             <Link
-              href="/training"
-              className="group bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-8 hover:shadow-xl transition-all"
+              href="/elite-modeling"
+              className="group relative bg-slate-50 border border-slate-200 rounded-xl p-8 hover:bg-white hover:shadow-lg hover:border-slate-300 transition-all"
             >
-              <ModuleIcon icon={Brain} bgColor="bg-emerald-600" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 mt-4">Адаптивті жаттығу</h3>
-              <p className="text-slate-600 mb-4">
-                Шексіз математика тренингі — деңгей автоматты түрде бейімделеді
+              <div className="w-14 h-14 bg-slate-200 rounded-xl flex items-center justify-center mb-6">
+                <BrainCog className="w-7 h-7 text-slate-700" strokeWidth={1.75} />
+              </div>
+              <div className="text-xs font-medium text-slate-400 tracking-wider uppercase mb-2">04</div>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">Дарын әлеуетін модельдеу</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Көпқабатты стратегиялық интеллект модельдеу
               </p>
-              <div className="text-emerald-600 font-semibold">Бастау →</div>
+              <div className="flex items-center text-slate-700 font-medium text-sm group-hover:gap-2 transition-all">
+                <span>Модельдеу</span>
+                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={2} />
+              </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Value Statement */}
+      <section className="py-24 bg-slate-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+            &ldquo;Нәтиже емес.{' '}
+            <span className="text-slate-500">Қабілет құрылымы.</span>&rdquo;
+          </p>
+          <p className="mt-8 text-lg text-slate-600 max-w-2xl mx-auto">
+            Біз балаға баға бермейміз — біз оның когнитивтік құрылымын модельдейміз
+          </p>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white border-y border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <Target className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-3xl font-bold text-slate-900">4</p>
+              <p className="text-sm text-slate-600 mt-1">Модельдеу деңгейі</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <Puzzle className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-3xl font-bold text-slate-900">15+</p>
+              <p className="text-sm text-slate-600 mt-1">Когнитивті ойындар</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <BarChart3 className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-3xl font-bold text-slate-900">140</p>
+              <p className="text-sm text-slate-600 mt-1">ҰБТ ұпай жүйесі</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <BrainCircuit className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-3xl font-bold text-slate-900">∞</p>
+              <p className="text-sm text-slate-600 mt-1">Адаптивті деңгейлер</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Games Center */}
-      <section className="py-12 bg-slate-50">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">Ойындар орталығы</h2>
-            <p className="text-slate-600">15 мини-ойын — оқушылардың әртүрлі қабілеттерін байқау</p>
+          <div className="text-center mb-12">
+            <p className="text-sm font-medium text-slate-500 tracking-[0.15em] uppercase mb-3">
+              Когнитивті жаттығулар
+            </p>
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight mb-4">
+              Ойындар орталығы
+            </h3>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              15 мини-ойын — оқушылардың әртүрлі қабілеттерін байқау және дамыту
+            </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <Link
               href="/logic-sprint"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-purple-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Puzzle} color="bg-purple-500" />
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                  <Puzzle className="w-6 h-6 text-purple-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Логикалық спринт</h3>
-              <p className="text-sm text-slate-600 mb-3">Логикалық заңдылық табу</p>
-              <div className="text-purple-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Логикалық спринт</h4>
+              <p className="text-xs text-slate-500">Логикалық заңдылық табу</p>
             </Link>
 
             <Link
               href="/mental-math"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Calculator} color="bg-amber-500" />
+                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                  <Calculator className="w-6 h-6 text-amber-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Жылдам есеп</h3>
-              <p className="text-sm text-slate-600 mb-3">Жылдам арифметика</p>
-              <div className="text-amber-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Жылдам есеп</h4>
+              <p className="text-xs text-slate-500">Жылдам арифметика</p>
             </Link>
 
             <Link
               href="/speech-1min"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-rose-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={MessageSquare} color="bg-rose-500" />
+                <div className="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center group-hover:bg-rose-200 transition-colors">
+                  <MessageSquare className="w-6 h-6 text-rose-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">1 минут сөйлеу</h3>
-              <p className="text-sm text-slate-600 mb-3">Сөйлеу шеберлігі</p>
-              <div className="text-rose-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">1 минут сөйлеу</h4>
+              <p className="text-xs text-slate-500">Сөйлеу шеберлігі</p>
             </Link>
 
             <Link
               href="/reading-mini"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-indigo-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={BookOpen} color="bg-indigo-500" />
+                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                  <BookOpen className="w-6 h-6 text-indigo-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Оқу түсіну</h3>
-              <p className="text-sm text-slate-600 mb-3">Түсіну қабілеті</p>
-              <div className="text-indigo-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Оқу түсіну</h4>
+              <p className="text-xs text-slate-500">Түсіну қабілеті</p>
             </Link>
 
             <Link
               href="/flash-memory"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-cyan-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={BrainCircuit} color="bg-cyan-500" />
+                <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center group-hover:bg-cyan-200 transition-colors">
+                  <BrainCircuit className="w-6 h-6 text-cyan-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Flash Memory</h3>
-              <p className="text-sm text-slate-600 mb-3">Есте сақтау</p>
-              <div className="text-cyan-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Flash Memory</h4>
+              <p className="text-xs text-slate-500">Есте сақтау</p>
             </Link>
 
             <Link
               href="/reaction-light"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-lime-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Zap} color="bg-lime-500" />
+                <div className="w-12 h-12 bg-lime-100 rounded-xl flex items-center justify-center group-hover:bg-lime-200 transition-colors">
+                  <Zap className="w-6 h-6 text-lime-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Реакция &quot;Бағдаршам&quot;</h3>
-              <p className="text-sm text-slate-600 mb-3">Жылдам реакция</p>
-              <div className="text-lime-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Реакция</h4>
+              <p className="text-xs text-slate-500">Жылдам реакция</p>
             </Link>
 
             <Link
               href="/story-cards"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-violet-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Sparkles} color="bg-violet-500" />
+                <div className="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center group-hover:bg-violet-200 transition-colors">
+                  <Sparkles className="w-6 h-6 text-violet-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Story Cards</h3>
-              <p className="text-sm text-slate-600 mb-3">Шығармашылық</p>
-              <div className="text-violet-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Story Cards</h4>
+              <p className="text-xs text-slate-500">Шығармашылық</p>
             </Link>
 
             <Link
               href="/spot-difference"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-emerald-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Search} color="bg-emerald-500" />
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                  <Search className="w-6 h-6 text-emerald-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Айырмашылықты тап</h3>
-              <p className="text-sm text-slate-600 mb-3">Бақылау қабілеті</p>
-              <div className="text-emerald-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Айырмашылықты тап</h4>
+              <p className="text-xs text-slate-500">Бақылау қабілеті</p>
             </Link>
 
             <Link
               href="/world-quick"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-teal-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Globe} color="bg-teal-500" />
+                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                  <Globe className="w-6 h-6 text-teal-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Дүниетану Q&A</h3>
-              <p className="text-sm text-slate-600 mb-3">Білім деңгейі</p>
-              <div className="text-teal-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Дүниетану Q&A</h4>
+              <p className="text-xs text-slate-500">Білім деңгейі</p>
             </Link>
 
             <Link
               href="/team-strategy"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-slate-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Users} color="bg-slate-600" />
+                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                  <Users className="w-6 h-6 text-slate-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Командалық стратегия</h3>
-              <p className="text-sm text-slate-600 mb-3">Командалық ойлау</p>
-              <div className="text-slate-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Командалық стратегия</h4>
+              <p className="text-xs text-slate-500">Командалық ойлау</p>
             </Link>
 
             <Link
               href="/capture-flag"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Flag} color="bg-red-500" />
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                  <Flag className="w-6 h-6 text-red-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Байрақты алу</h3>
-              <p className="text-sm text-slate-600 mb-3">Екі команда байраққа жарысады</p>
-              <div className="text-red-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Байрақты алу</h4>
+              <p className="text-xs text-slate-500">Команда жарысы</p>
             </Link>
 
             <Link
               href="/castle-siege"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-purple-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Castle} color="bg-purple-600" />
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                  <Castle className="w-6 h-6 text-purple-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Қамал шабуылы</h3>
-              <p className="text-sm text-slate-600 mb-3">Екі команда қамалды қорғайды</p>
-              <div className="text-purple-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Қамал шабуылы</h4>
+              <p className="text-xs text-slate-500">Стратегия</p>
             </Link>
 
             <Link
               href="/combo-rush"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Timer} color="bg-orange-500" />
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                  <Timer className="w-6 h-6 text-orange-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Қатарынан шабуыл</h3>
-              <p className="text-sm text-slate-600 mb-3">Жылдам жауап беру және қатарынан дұрыс</p>
-              <div className="text-orange-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Қатарынан шабуыл</h4>
+              <p className="text-xs text-slate-500">Жылдам жауап</p>
             </Link>
 
             <Link
               href="/quick-judge"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-indigo-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Scale} color="bg-indigo-600" />
+                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                  <Scale className="w-6 h-6 text-indigo-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Дұрыс/Бұрыс тез шешім</h3>
-              <p className="text-sm text-slate-600 mb-3">Жылдам дұрыс немесе бұрыс деп анықтау</p>
-              <div className="text-indigo-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Дұрыс/Бұрыс</h4>
+              <p className="text-xs text-slate-500">Тез шешім</p>
             </Link>
 
             <Link
               href="/sentence-puzzle"
-              className="bg-white border-2 border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-teal-300 transition-all text-center"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-slate-300 transition-all text-center group"
             >
               <div className="flex justify-center mb-3">
-                <GameCardIcon icon={Lightbulb} color="bg-teal-600" />
+                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                  <Lightbulb className="w-6 h-6 text-teal-600" strokeWidth={1.75} />
+                </div>
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">Сөйлем жұмбағы</h3>
-              <p className="text-sm text-slate-600 mb-3">Сөйлемді дұрыс ретпен құрастыру</p>
-              <div className="text-teal-600 font-semibold text-sm">Ойынға кіру →</div>
+              <h4 className="font-semibold text-slate-900 mb-1">Сөйлем жұмбағы</h4>
+              <p className="text-xs text-slate-500">Құрастыру</p>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-600 text-sm">
-          <p>Барлық ойындар мұғалім басқаратын режимде жұмыс істейді</p>
-          <p className="mt-2">Сынып таңдағанда деңгей автоматты түрде өзгереді (1–6 сынып)</p>
+      <footer className="bg-slate-900 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                <Brain className="w-5 h-5 text-slate-400" strokeWidth={1.75} />
+              </div>
+              <div>
+                <p className="text-white font-semibold">MathForce AI</p>
+                <p className="text-slate-500 text-sm">Когнитивтік модельдеу платформасы</p>
+              </div>
+            </div>
+            <div className="text-center md:text-right text-slate-500 text-sm">
+              <p>Барлық ойындар мұғалім басқаратын режимде жұмыс істейді</p>
+              <p className="mt-1">Сынып таңдағанда деңгей автоматты түрде өзгереді</p>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
