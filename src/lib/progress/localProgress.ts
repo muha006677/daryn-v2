@@ -51,7 +51,7 @@ export function getWrongAnswers(lessonId: string): WrongAnswerRecord[] {
   }
 }
 
-export function removeWrongAnswer(lessonId: string, questionId: string): void {
+export function removeWrongAnswer(lessonId: string, questionId: number): void {
   if (typeof window === 'undefined') return
 
   try {
