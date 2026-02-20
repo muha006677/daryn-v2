@@ -6,11 +6,11 @@ import { useState } from 'react'
 import { Brain, Search, Menu, X } from 'lucide-react'
 
 const navLinks = [
+  { href: '/courses', label: 'Курстар' },
   { href: '/training', label: 'Жаттығу' },
   { href: '/ubt', label: 'ҰБТ' },
   { href: '/diagnostics', label: 'Диагностика' },
   { href: '/talent', label: 'Дарын' },
-  { href: '/resources', label: 'Ресурстар' },
 ]
 
 export function Navigation() {

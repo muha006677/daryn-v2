@@ -8,6 +8,14 @@ import { Suspense } from 'react'
 
 const allRoutes = [
   { 
+    path: '/courses', 
+    title: 'Математика курсы (5–11 сынып)', 
+    description: 'Құрылымдалған математика курсы — сынып пен тақырып бойынша жаттығулар',
+    keywords: ['курс', 'сынып', 'математика', '5', '6', '7', '8', '9', '10', '11', 'тақырып'],
+    icon: BookOpen,
+    color: 'bg-indigo-100 text-indigo-600'
+  },
+  { 
     path: '/training', 
     title: 'Адаптивті жаттығу', 
     description: 'Шексіз математика тренингі — деңгей автоматты түрде бейімделеді',
