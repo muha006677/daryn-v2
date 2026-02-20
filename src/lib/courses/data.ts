@@ -1,5 +1,9 @@
 import { Curriculum, CourseData, Category, CategoryKey, Grade } from './types'
 
+export type GradeType = {
+  topics: Record<string, any>
+}
+
 export const categories: Category[] = [
   {
     id: 'primary',
@@ -684,7 +688,7 @@ export const curriculum: Curriculum = {
 }
 
 // Helper to get all grades as flat CourseData (for backward compatibility)
-export const courseData: CourseData = {
+export const courseData: Record<string, GradeType> = {
   ...curriculum.primary,
   ...curriculum.middle,
   ...curriculum.high,
