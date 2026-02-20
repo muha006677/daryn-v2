@@ -105,7 +105,7 @@ export default function Counting10Page() {
   const allAnswered = answeredCount === currentQuestions.length
   const currentCorrect = Object.values(results).filter(Boolean).length
 
-  const remainingQuestions = questionBank.length - usedIds.size
+  const remainingQuestions = Math.max(0, (questionBank?.length ?? 0) - (usedIds?.size ?? 0))
 
   if (!isInitialized) {
     return (

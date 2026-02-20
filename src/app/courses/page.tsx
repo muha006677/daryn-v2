@@ -17,13 +17,13 @@ export default function CoursesPage() {
     )
   }
 
-  const totalTopics = Object.values(courseData).reduce(
-    (sum: number, grade: Grade) => sum + grade.topics.length,
+  const totalTopics = (Object.values(courseData ?? {}) as Grade[]).reduce(
+    (sum: number, grade: Grade) => sum + (grade?.topics?.length ?? 0),
     0
   )
-  const totalQuestions = Object.values(courseData).reduce(
+  const totalQuestions = (Object.values(courseData ?? {}) as Grade[]).reduce(
     (sum: number, grade: Grade) =>
-      sum + grade.topics.reduce((tSum: number, topic: Topic) => tSum + topic.questions.length, 0),
+      sum + (grade?.topics ?? []).reduce((tSum: number, topic: Topic) => tSum + (topic?.questions?.length ?? 0), 0),
     0
   )
 

@@ -54,7 +54,7 @@ export default function GradePage({ params }: PageProps) {
               <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
                 {grade.label}
               </h1>
-              <p className="text-slate-400 mt-1">{grade.topics.length} тақырып</p>
+              <p className="text-slate-400 mt-1">{grade?.topics?.length ?? 0} тақырып</p>
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default function GradePage({ params }: PageProps) {
           <h2 className="text-xl font-bold text-slate-900 mb-6">Тақырыптар</h2>
           
           <div className="space-y-3">
-            {grade.topics.map((topic, index) => (
+            {(grade?.topics ?? []).map((topic, index) => (
               <Link
                 key={topic.id}
                 href={`/courses/${gradeId}/${topic.id}`}
@@ -101,7 +101,7 @@ export default function GradePage({ params }: PageProps) {
               </div>
               <div>
                 <p className="text-2xl font-bold text-slate-900">
-                  {grade.topics.reduce((sum, t) => sum + t.questions.length, 0)}
+                  {(grade?.topics ?? []).reduce((sum, t) => sum + (t.questions?.length ?? 0), 0)}
                 </p>
                 <p className="text-slate-600">Жалпы есептер саны</p>
               </div>

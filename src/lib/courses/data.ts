@@ -704,6 +704,6 @@ export function getCategoryForGrade(gradeId: number): Category | undefined {
 
 // Helper to get grades by category
 export function getGradesByCategory(categoryId: CategoryKey): Grade[] {
-  const categoryGrades = curriculum[categoryId]
-  return Object.values(categoryGrades)
+  const categoryGrades = curriculum?.[categoryId]
+  return Object.values(categoryGrades ?? {})
 }

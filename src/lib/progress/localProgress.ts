@@ -74,6 +74,7 @@ export function clearWrongAnswers(lessonId: string): void {
 }
 
 export function getWrongAnswerCount(lessonId: string): number {
+  if (typeof window === 'undefined') return 0
   return getWrongAnswers(lessonId).length
 }
 

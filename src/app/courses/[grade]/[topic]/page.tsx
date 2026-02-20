@@ -15,8 +15,8 @@ export default function TopicPracticePage({ params }: PageProps) {
   const { grade: gradeParam, topic: topicParam } = use(params)
   const router = useRouter()
   const gradeId = parseInt(gradeParam, 10)
-  const grade = courseData[gradeId]
-  const topic = grade?.topics.find((t) => t.id === topicParam)
+  const grade = courseData?.[gradeId]
+  const topic = grade?.topics?.find((t) => t.id === topicParam)
 
   const [answers, setAnswers] = useState<AnswerState>({})
   const [result, setResult] = useState<PracticeResult | null>(null)
@@ -43,7 +43,8 @@ export default function TopicPracticePage({ params }: PageProps) {
 
   const handleSubmit = () => {
     if (!topic) return
-    const practiceResult = calculateResults(topic.questions, answers)
+    const questions = topic.questions ?? []
+    const practiceResult = calculateResults(questions, answers)
     setResult(practiceResult)
     setShowExplanations(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -141,7 +142,7 @@ export default function TopicPracticePage({ params }: PageProps) {
       {/* Questions */}
       <section className="py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          {topic.questions.map((question, index) => {
+          {(topic.questions ?? []).map((question, index) => {
             const qResult = getQuestionResult(question.id)
             
             return (
@@ -287,7 +288,7 @@ export default function TopicPracticePage({ params }: PageProps) {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <p className="text-slate-600">
-                {Object.keys(answers).length} / {topic.questions.length} сұраққа жауап берілді
+                {Object.keys(answers).length} / {(topic.questions ?? []).length} сұраққа жауап берілді
               </p>
               <button
                 onClick={handleSubmit}
