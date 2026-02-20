@@ -119,6 +119,56 @@ export function generateQuestionBank(count: number = 100): Question[] {
   return questions
 }
 
+export interface Lesson1Question {
+  id: string
+  question: string
+  options: number[]
+  correct: number
+  explanation: string
+}
+
+export function generateLesson1Questions(count: number = 100): Lesson1Question[] {
+  const questions: Lesson1Question[] = []
+  const usedCombinations = new Set<string>()
+
+  let attempts = 0
+  const maxAttempts = count * 10
+
+  while (questions.length < count && attempts < maxAttempts) {
+    const q = generateCountingQuestion(questions.length)
+    const correct = parseInt(q.correctAnswer, 10)
+    const options = (q.options ?? []).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n))
+    const key = q.question
+
+    if (!usedCombinations.has(key) && options.length >= 4) {
+      usedCombinations.add(key)
+      questions.push({
+        id: q.id,
+        question: q.question,
+        options,
+        correct,
+        explanation: q.explanation ?? '',
+      })
+    }
+    attempts++
+  }
+
+  while (questions.length < count) {
+    const q = generateCountingQuestion(questions.length)
+    const correct = parseInt(q.correctAnswer, 10)
+    const options = (q.options ?? []).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n))
+    questions.push({
+      id: q.id,
+      question: q.question,
+      options: options.length >= 4 ? options : [1, 2, 3, 4],
+      correct,
+      explanation: q.explanation ?? '',
+    })
+  }
+
+  return questions
+}
+
 export const lesson1Config = {
   id: 'counting-10',
   title: 'Заттарды санау (10-ға дейін)',
