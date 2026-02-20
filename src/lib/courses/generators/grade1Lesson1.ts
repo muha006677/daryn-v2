@@ -1,4 +1,10 @@
-import { Question } from '../types'
+export type Question = {
+  id: string
+  question: string
+  options: number[]
+  correct: number
+  explanation: string
+}
 
 const objects = [
   { name: 'алма', emoji: '🍎' },
@@ -78,19 +84,15 @@ export function generateCountingQuestion(id: number): Question {
   const template = questionTemplates[Math.floor(Math.random() * questionTemplates.length)]
   
   const { question, explanation } = template(obj, count)
-  const correctAnswer = count.toString()
-  const wrongAnswers = generateWrongOptions(count).map((n) => n.toString())
-  
-  const options = shuffleArray([correctAnswer, ...wrongAnswers])
+  const wrongAnswers = generateWrongOptions(count)
+  const options = shuffleArray([count, ...wrongAnswers])
   
   return {
     id: `g1-counting-${id}`,
-    type: 'single',
     question,
     options,
-    correctAnswer,
+    correct: count,
     explanation,
-    points: 1,
   }
 }
 
@@ -119,16 +121,8 @@ export function generateQuestionBank(count: number = 100): Question[] {
   return questions
 }
 
-export interface Lesson1Question {
-  id: string
-  question: string
-  options: number[]
-  correct: number
-  explanation: string
-}
-
-export function generateLesson1Questions(count: number = 100): Lesson1Question[] {
-  const questions: Lesson1Question[] = []
+export function generateLesson1Questions(count: number = 100): Question[] {
+  const questions: Question[] = []
   const usedCombinations = new Set<string>()
 
   let attempts = 0
@@ -136,34 +130,18 @@ export function generateLesson1Questions(count: number = 100): Lesson1Question[]
 
   while (questions.length < count && attempts < maxAttempts) {
     const q = generateCountingQuestion(questions.length)
-    const correct = parseInt(q.correctAnswer, 10)
-    const options = (q.options ?? []).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n))
     const key = q.question
 
-    if (!usedCombinations.has(key) && options.length >= 4) {
+    if (!usedCombinations.has(key) && q.options.length >= 4) {
       usedCombinations.add(key)
-      questions.push({
-        id: q.id,
-        question: q.question,
-        options,
-        correct,
-        explanation: q.explanation ?? '',
-      })
+      questions.push(q)
     }
     attempts++
   }
 
   while (questions.length < count) {
     const q = generateCountingQuestion(questions.length)
-    const correct = parseInt(q.correctAnswer, 10)
-    const options = (q.options ?? []).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n))
-    questions.push({
-      id: q.id,
-      question: q.question,
-      options: options.length >= 4 ? options : [1, 2, 3, 4],
-      correct,
-      explanation: q.explanation ?? '',
-    })
+    questions.push(q)
   }
 
   return questions
