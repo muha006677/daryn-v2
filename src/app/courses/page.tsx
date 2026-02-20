@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Navigation } from '@/components/Navigation'
-import { categories, getGradesByCategory, courseData } from '@/lib/courses'
+import { categories, getGradesByCategory, courseData, Grade, Topic } from '@/lib/courses'
 import { BookOpen, ChevronRight, ChevronDown, GraduationCap } from 'lucide-react'
 
 export default function CoursesPage() {
@@ -17,9 +17,13 @@ export default function CoursesPage() {
     )
   }
 
-  const totalTopics = Object.values(courseData).reduce((sum, grade) => sum + grade.topics.length, 0)
+  const totalTopics = Object.values(courseData).reduce(
+    (sum: number, grade: Grade) => sum + grade.topics.length,
+    0
+  )
   const totalQuestions = Object.values(courseData).reduce(
-    (sum, grade) => sum + grade.topics.reduce((tSum, topic) => tSum + topic.questions.length, 0),
+    (sum: number, grade: Grade) =>
+      sum + grade.topics.reduce((tSum: number, topic: Topic) => tSum + topic.questions.length, 0),
     0
   )
 
