@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useStudentName } from '@/hooks/useStudentName'
 import {
   GameCardIcon,
   BrainCog,
@@ -27,35 +26,16 @@ import {
   Target,
   BarChart3,
 } from '@/components/icons'
+import { Navigation } from '@/components/Navigation'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 
 export default function Home() {
-  const { name } = useStudentName()
-
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 py-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
-              <Brain className="w-5 h-5 text-white" strokeWidth={1.75} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 tracking-tight">MathForce AI</h1>
-            </div>
-          </div>
-          {name && (
-            <div className="text-right">
-              <p className="text-sm text-slate-500">Сәлем,</p>
-              <p className="text-base font-semibold text-slate-800">{name}</p>
-            </div>
-          )}
-        </div>
-      </header>
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="relative bg-slate-950 py-28 overflow-hidden">
+      <section className="relative bg-slate-950 pt-32 pb-28 overflow-hidden">
         {/* Radial glow layers */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
