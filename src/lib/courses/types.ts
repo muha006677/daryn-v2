@@ -15,6 +15,7 @@ export interface Topic {
   title: string
   description: string
   questions: Question[]
+  generator?: string
 }
 
 export interface Grade {

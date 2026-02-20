@@ -34,6 +34,13 @@ export const curriculum: Curriculum = {
       label: '1 сынып',
       topics: [
         {
+          id: 'counting-10',
+          title: 'Заттарды санау (10-ға дейін)',
+          description: '1-ден 10-ға дейін заттарды санау — 100 динамикалық сұрақ',
+          questions: [],
+          generator: 'grade1Lesson1',
+        },
+        {
           id: 'counting',
           title: 'Санау және сандар',
           description: '1-ден 20-ға дейін санау',
