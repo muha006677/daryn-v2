@@ -27,6 +27,23 @@ export interface CourseData {
   [gradeId: number]: Grade
 }
 
+export type CategoryKey = 'primary' | 'middle' | 'high'
+
+export interface Category {
+  id: CategoryKey
+  label: string
+  labelKz: string
+  color: string
+  bgColor: string
+  grades: number[]
+}
+
+export interface Curriculum {
+  primary: { [gradeId: number]: Grade }
+  middle: { [gradeId: number]: Grade }
+  high: { [gradeId: number]: Grade }
+}
+
 export interface AnswerState {
   [questionId: string]: string | string[]
 }
