@@ -7,6 +7,7 @@ import { categories, getGradesByCategory, courseData, Grade, Topic } from '@/lib
 import { BookOpen, ChevronRight, ChevronDown, GraduationCap } from 'lucide-react'
 
 export default function CoursesPage() {
+  console.log(courseData)
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['primary', 'middle', 'high'])
 
   const toggleCategory = (categoryId: string) => {
@@ -50,7 +51,7 @@ export default function CoursesPage() {
       <section className="py-12 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
-            {categories.map((category) => {
+            {(categories ?? []).map((category) => {
               const isExpanded = expandedCategories.includes(category.id)
               const grades = getGradesByCategory(category.id)
 
@@ -73,7 +74,7 @@ export default function CoursesPage() {
                           {category.labelKz}
                         </h3>
                         <p className="text-sm text-slate-500">
-                          {category.grades[0]}–{category.grades[category.grades.length - 1]} сынып • {grades.length} сынып
+                          {(category?.grades?.[0] ?? '')}–{(category?.grades?.[(category?.grades?.length ?? 1) - 1] ?? '')} сынып • {(grades ?? []).length} сынып
                         </p>
                       </div>
                     </div>
@@ -87,10 +88,10 @@ export default function CoursesPage() {
                   {/* Grades List */}
                   {isExpanded && (
                     <div className="border-t border-slate-200 divide-y divide-slate-100">
-                      {grades.map((grade) => (
+                      {(grades ?? []).map((grade, idx) => (
                         <Link
-                          key={grade.id}
-                          href={`/courses/${grade.id}`}
+                          key={grade?.id ?? idx}
+                          href={`/courses/${grade?.id ?? ''}`}
                           className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
                         >
                           <div className="flex items-center gap-3">
@@ -99,7 +100,7 @@ export default function CoursesPage() {
                             </span>
                             <div>
                               <p className="font-medium text-slate-900">{grade.label}</p>
-                              <p className="text-sm text-slate-500">{grade.topics.length} тақырып</p>
+                              <p className="text-sm text-slate-500">{grade?.topics?.length ?? 0} тақырып</p>
                             </div>
                           </div>
                           <ChevronRight className="w-5 h-5 text-slate-300" strokeWidth={1.75} />
@@ -139,12 +140,12 @@ export default function CoursesPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">Жылдам қатынау</h2>
           <div className="flex flex-wrap justify-center gap-2">
-            {Object.values(courseData).map((grade) => {
-              const category = categories.find((c) => c.grades.includes(grade.id))
+            {Object.values(courseData ?? {}).map((grade, idx) => {
+              const category = (categories ?? []).find((c) => (c?.grades ?? []).includes(grade?.id))
               return (
                 <Link
-                  key={grade.id}
-                  href={`/courses/${grade.id}`}
+                  key={grade?.id ?? idx}
+                  href={`/courses/${grade?.id ?? ''}`}
                   className={`px-4 py-2 ${category?.bgColor || 'bg-slate-100'} ${category?.color || 'text-slate-600'} rounded-lg font-medium text-sm hover:opacity-80 transition-opacity`}
                 >
                   {grade.id} сынып
