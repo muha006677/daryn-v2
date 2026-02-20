@@ -1,11 +1,6 @@
-import { AdaptiveQuestion } from '../courses/generators/grade1Lesson1'
+import { AdaptiveQuestion, WrongAnswerRecord } from '@/types/courseTypes'
 
-export interface WrongAnswerRecord {
-  question: AdaptiveQuestion
-  selectedAnswer: string
-  timestamp: number
-  attempts: number
-}
+export type { WrongAnswerRecord }
 
 const STORAGE_KEY_PREFIX = 'mathforce_wrong_answers_'
 
