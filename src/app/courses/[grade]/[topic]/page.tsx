@@ -16,7 +16,7 @@ export default function TopicPracticePage({ params }: PageProps) {
   const router = useRouter()
   const gradeId = parseInt(gradeParam, 10)
   const grade = courseData?.[gradeId]
-  const topic = grade?.topics?.find((t) => t.id === topicParam)
+  const topic = grade?.topics?.[topicParam]
 
   const [answers, setAnswers] = useState<AnswerState>({})
   const [result, setResult] = useState<PracticeResult | null>(null)
