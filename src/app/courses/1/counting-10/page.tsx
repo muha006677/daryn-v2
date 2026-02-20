@@ -3,35 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Navigation } from '@/components/Navigation'
-import { VisualCounter } from '@/components/VisualCounter'
-import { 
-  generateAdaptiveQuestion, 
-  lesson1Config,
-  levelNames,
-  levelColors,
-  DifficultyLevel,
-  AdaptiveQuestion,
-} from '@/lib/courses/generators/grade1Lesson1'
-import { 
-  saveWrongAnswer, 
-  getWrongAnswerCount,
-  saveProgressStats,
-  getProgressStats,
-  clearProgressStats,
-  clearWrongAnswers,
-} from '@/lib/progress'
-import { 
-  ArrowLeft, 
-  CheckCircle, 
-  XCircle, 
-  RotateCcw, 
-  Trophy, 
-  ChevronRight, 
-  Star,
-  AlertCircle,
-  TrendingUp,
-  TrendingDown,
-} from 'lucide-react'
+import { generateQuestionBank, lesson1Config } from '@/lib/courses/generators/grade1Lesson1'
+import { Question } from '@/lib/courses'
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Trophy, ChevronRight, Star } from 'lucide-react'
 
 interface AnswerState {
   [questionId: string]: string
@@ -42,79 +16,56 @@ interface ResultState {
 }
 
 export default function Counting10Page() {
-  const [currentQuestions, setCurrentQuestions] = useState<AdaptiveQuestion[]>([])
+  const [questionBank, setQuestionBank] = useState<Question[]>([])
+  const [usedIds, setUsedIds] = useState<Set<string>>(new Set())
+  const [currentQuestions, setCurrentQuestions] = useState<Question[]>([])
   const [answers, setAnswers] = useState<AnswerState>({})
   const [results, setResults] = useState<ResultState>({})
   const [showResults, setShowResults] = useState(false)
-  
-  const [level, setLevel] = useState<DifficultyLevel>(1)
-  const [correctStreak, setCorrectStreak] = useState(0)
-  const [wrongStreak, setWrongStreak] = useState(0)
+  const [totalScore, setTotalScore] = useState(0)
   const [totalAnswered, setTotalAnswered] = useState(0)
-  const [totalCorrect, setTotalCorrect] = useState(0)
-  const [highestLevel, setHighestLevel] = useState<DifficultyLevel>(1)
-  
-  const [usedQuestionKeys, setUsedQuestionKeys] = useState<Set<string>>(new Set())
-  const [wrongCount, setWrongCount] = useState(0)
   const [isInitialized, setIsInitialized] = useState(false)
-  const [levelChanged, setLevelChanged] = useState<'up' | 'down' | null>(null)
 
   const questionsPerBatch = lesson1Config.questionsPerBatch
-  const lessonId = lesson1Config.id
 
   useEffect(() => {
-    const savedStats = getProgressStats(lessonId)
-    if (savedStats) {
-      setTotalAnswered(savedStats.totalAnswered)
-      setTotalCorrect(savedStats.correctAnswers)
-      setLevel(savedStats.currentLevel as DifficultyLevel)
-      setHighestLevel(savedStats.highestLevel as DifficultyLevel)
-      setCorrectStreak(savedStats.streak)
-    }
-    setWrongCount(getWrongAnswerCount(lessonId))
+    const bank = generateQuestionBank(lesson1Config.totalQuestions)
+    setQuestionBank(bank)
     setIsInitialized(true)
-  }, [lessonId])
-
-  const generateNewBatch = useCallback(() => {
-    const questions: AdaptiveQuestion[] = []
-    let attempts = 0
-    const maxAttempts = questionsPerBatch * 20
-
-    while (questions.length < questionsPerBatch && attempts < maxAttempts) {
-      const question = generateAdaptiveQuestion(
-        totalAnswered + questions.length,
-        level
-      )
-      const key = `${question.objectType}-${question.count}`
-      
-      if (!usedQuestionKeys.has(key)) {
-        questions.push(question)
-        setUsedQuestionKeys((prev) => new Set(prev).add(key))
-      }
-      attempts++
-    }
-
-    while (questions.length < questionsPerBatch) {
-      questions.push(generateAdaptiveQuestion(totalAnswered + questions.length, level))
-    }
-
-    return questions
-  }, [level, questionsPerBatch, totalAnswered, usedQuestionKeys])
+  }, [])
 
   const loadNextBatch = useCallback(() => {
-    const newQuestions = generateNewBatch()
-    setCurrentQuestions(newQuestions)
+    if (questionBank.length === 0) return
+
+    const availableQuestions = questionBank.filter((q) => !usedIds.has(q.id))
+    
+    if (availableQuestions.length === 0) {
+      setUsedIds(new Set())
+      const shuffled = [...questionBank].sort(() => Math.random() - 0.5)
+      setCurrentQuestions(shuffled.slice(0, questionsPerBatch))
+      const newUsedIds = new Set(shuffled.slice(0, questionsPerBatch).map((q) => q.id))
+      setUsedIds(newUsedIds)
+    } else {
+      const shuffled = [...availableQuestions].sort(() => Math.random() - 0.5)
+      const selected = shuffled.slice(0, Math.min(questionsPerBatch, shuffled.length))
+      setCurrentQuestions(selected)
+      setUsedIds((prev) => {
+        const newSet = new Set(prev)
+        selected.forEach((q) => newSet.add(q.id))
+        return newSet
+      })
+    }
+    
     setAnswers({})
     setResults({})
     setShowResults(false)
-    setLevelChanged(null)
-  }, [generateNewBatch])
+  }, [questionBank, usedIds, questionsPerBatch])
 
   useEffect(() => {
-    if (isInitialized && currentQuestions.length === 0) {
+    if (isInitialized && questionBank.length > 0 && currentQuestions.length === 0) {
       loadNextBatch()
     }
-  }, [isInitialized, currentQuestions.length, loadNextBatch])
+  }, [isInitialized, questionBank, currentQuestions.length, loadNextBatch])
 
   const handleAnswer = (questionId: string, answer: string) => {
     if (showResults) return
@@ -123,93 +74,38 @@ export default function Counting10Page() {
 
   const handleSubmit = () => {
     const newResults: ResultState = {}
-    let batchCorrect = 0
-    let batchWrong = 0
+    let correctCount = 0
 
     currentQuestions.forEach((q) => {
       const isCorrect = answers[q.id] === q.correctAnswer
       newResults[q.id] = isCorrect
-      
-      if (isCorrect) {
-        batchCorrect++
-      } else {
-        batchWrong++
-        saveWrongAnswer(lessonId, q, answers[q.id] || '')
-      }
+      if (isCorrect) correctCount++
     })
 
     setResults(newResults)
     setShowResults(true)
-    setWrongCount(getWrongAnswerCount(lessonId))
-
-    const newTotalAnswered = totalAnswered + currentQuestions.length
-    const newTotalCorrect = totalCorrect + batchCorrect
-    setTotalAnswered(newTotalAnswered)
-    setTotalCorrect(newTotalCorrect)
-
-    let newCorrectStreak = batchCorrect === questionsPerBatch ? correctStreak + questionsPerBatch : 0
-    let newWrongStreak = batchWrong >= 2 ? wrongStreak + batchWrong : 0
-    
-    if (batchCorrect < questionsPerBatch) {
-      newCorrectStreak = batchCorrect
-    }
-    if (batchWrong < 2) {
-      newWrongStreak = 0
-    }
-
-    setCorrectStreak(newCorrectStreak)
-    setWrongStreak(newWrongStreak)
-
-    let newLevel = level
-    if (newCorrectStreak >= 3 && level < 5) {
-      newLevel = (level + 1) as DifficultyLevel
-      setLevelChanged('up')
-      newCorrectStreak = 0
-    } else if (newWrongStreak >= 2 && level > 1) {
-      newLevel = (level - 1) as DifficultyLevel
-      setLevelChanged('down')
-      newWrongStreak = 0
-    }
-
-    setLevel(newLevel)
-    setCorrectStreak(newCorrectStreak)
-    setWrongStreak(newWrongStreak)
-
-    const newHighest = Math.max(highestLevel, newLevel) as DifficultyLevel
-    setHighestLevel(newHighest)
-
-    saveProgressStats(lessonId, {
-      totalAnswered: newTotalAnswered,
-      correctAnswers: newTotalCorrect,
-      wrongAnswers: newTotalAnswered - newTotalCorrect,
-      currentLevel: newLevel,
-      highestLevel: newHighest,
-      streak: newCorrectStreak,
-    })
+    setTotalScore((prev) => prev + correctCount)
+    setTotalAnswered((prev) => prev + currentQuestions.length)
   }
 
   const handleReset = () => {
-    clearProgressStats(lessonId)
-    clearWrongAnswers(lessonId)
-    setUsedQuestionKeys(new Set())
+    setUsedIds(new Set())
     setCurrentQuestions([])
     setAnswers({})
     setResults({})
     setShowResults(false)
-    setLevel(1)
-    setCorrectStreak(0)
-    setWrongStreak(0)
+    setTotalScore(0)
     setTotalAnswered(0)
-    setTotalCorrect(0)
-    setHighestLevel(1)
-    setWrongCount(0)
-    setLevelChanged(null)
+    
+    const newBank = generateQuestionBank(lesson1Config.totalQuestions)
+    setQuestionBank(newBank)
   }
 
   const answeredCount = Object.keys(answers).length
   const allAnswered = answeredCount === currentQuestions.length
   const currentCorrect = Object.values(results).filter(Boolean).length
-  const progressPercent = Math.min((totalAnswered / lesson1Config.totalQuestions) * 100, 100)
+
+  const remainingQuestions = questionBank.length - usedIds.size
 
   if (!isInitialized) {
     return (
@@ -237,107 +133,55 @@ export default function Counting10Page() {
             <span className="text-sm">1 сынып</span>
           </Link>
           
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-4xl">
-                🔢
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                  {lesson1Config.title}
-                </h1>
-                <p className="text-white/80 mt-1">{lesson1Config.description}</p>
-              </div>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-4xl">
+              🔢
             </div>
-            
-            <div className={`px-4 py-2 rounded-xl font-bold ${levelColors[level]}`}>
-              Деңгей {level}: {levelNames[level]}
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                {lesson1Config.title}
+              </h1>
+              <p className="text-white/80 mt-1">{lesson1Config.description}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Progress Bar */}
+      {/* Score Bar */}
       <section className="bg-white border-b border-amber-200 py-4">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5 text-amber-500" fill="currentColor" strokeWidth={1.75} />
-                <span className="font-bold text-amber-800">{totalCorrect} ұпай</span>
+                <span className="font-bold text-amber-800">{totalScore} ұпай</span>
               </div>
               <div className="text-sm text-amber-600">
-                {totalAnswered} / {lesson1Config.totalQuestions} сұрақ
+                {totalAnswered} сұраққа жауап берілді
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {wrongCount > 0 && (
-                <Link
-                  href="/courses/1/counting-10/review"
-                  className="flex items-center gap-2 px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors"
-                >
-                  <AlertCircle className="w-4 h-4" strokeWidth={2} />
-                  Қате тапсырмалар ({wrongCount})
-                </Link>
-              )}
-              <div className="text-sm text-amber-600">
-                Streak: {correctStreak} 🔥
-              </div>
+            <div className="text-sm text-amber-600">
+              Қалды: {remainingQuestions} сұрақ
             </div>
-          </div>
-          
-          <div className="w-full h-3 bg-amber-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
           </div>
         </div>
       </section>
 
-      {/* Level Change Notification */}
-      {levelChanged && (
-        <section className="py-4">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className={`flex items-center justify-center gap-3 p-4 rounded-xl ${
-              levelChanged === 'up' 
-                ? 'bg-emerald-100 text-emerald-800' 
-                : 'bg-orange-100 text-orange-800'
-            }`}>
-              {levelChanged === 'up' ? (
-                <>
-                  <TrendingUp className="w-6 h-6" strokeWidth={2} />
-                  <span className="font-bold">Керемет! Деңгей көтерілді: {level}</span>
-                  <span className="text-2xl">🎉</span>
-                </>
-              ) : (
-                <>
-                  <TrendingDown className="w-6 h-6" strokeWidth={2} />
-                  <span className="font-bold">Деңгей төмендеді: {level}. Қайта жаттығу!</span>
-                  <span className="text-2xl">💪</span>
-                </>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Questions */}
       <section className="py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {currentQuestions.map((question, index) => {
-            const isAnswered = answers[question.id] !== undefined
             const isCorrect = results[question.id]
             const showExplanation = showResults && !isCorrect
 
             return (
               <div
                 key={question.id}
-                className={`bg-white rounded-3xl shadow-xl overflow-hidden transition-all ${
+                className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all ${
                   showResults
                     ? isCorrect
-                      ? 'ring-4 ring-emerald-300'
-                      : 'ring-4 ring-red-300'
+                      ? 'ring-4 ring-emerald-200'
+                      : 'ring-4 ring-red-200'
                     : ''
                 }`}
               >
@@ -351,7 +195,7 @@ export default function Counting10Page() {
                       isCorrect ? (
                         <div className="flex items-center gap-2 text-emerald-600">
                           <CheckCircle className="w-6 h-6" strokeWidth={2} />
-                          <span className="font-bold">Дұрыс! ⭐</span>
+                          <span className="font-bold">Дұрыс!</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 text-red-600">
@@ -363,18 +207,9 @@ export default function Counting10Page() {
                   </div>
                 </div>
 
-                {/* Visual Display */}
-                <div className="p-6 pb-4">
-                  <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-2xl p-6 mb-6">
-                    <VisualCounter 
-                      count={question.count} 
-                      objectType={question.objectType}
-                      size="lg"
-                      animated={!showResults}
-                    />
-                  </div>
-
-                  <p className="text-xl sm:text-2xl text-center font-medium text-gray-800 mb-6">
+                {/* Question Content */}
+                <div className="p-6">
+                  <p className="text-2xl sm:text-3xl text-center mb-8 leading-relaxed">
                     {question.question}
                   </p>
 
@@ -385,18 +220,18 @@ export default function Counting10Page() {
                       const isSelected = answers[question.id] === option
                       const isCorrectOption = option === question.correctAnswer
                       
-                      let buttonClass = 'bg-amber-50 border-3 border-amber-200 hover:border-amber-400 hover:bg-amber-100 hover:scale-105'
+                      let buttonClass = 'bg-amber-50 border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-100'
                       
                       if (showResults) {
                         if (isCorrectOption) {
-                          buttonClass = 'bg-emerald-100 border-3 border-emerald-400 scale-105'
+                          buttonClass = 'bg-emerald-100 border-2 border-emerald-400'
                         } else if (isSelected && !isCorrectOption) {
-                          buttonClass = 'bg-red-100 border-3 border-red-400'
+                          buttonClass = 'bg-red-100 border-2 border-red-400'
                         } else {
-                          buttonClass = 'bg-gray-50 border-3 border-gray-200 opacity-50'
+                          buttonClass = 'bg-gray-50 border-2 border-gray-200 opacity-50'
                         }
                       } else if (isSelected) {
-                        buttonClass = 'bg-amber-200 border-3 border-amber-500 scale-105'
+                        buttonClass = 'bg-amber-200 border-2 border-amber-500'
                       }
 
                       return (
@@ -404,11 +239,11 @@ export default function Counting10Page() {
                           key={optIndex}
                           onClick={() => handleAnswer(question.id, option)}
                           disabled={showResults}
-                          className={`p-5 sm:p-6 rounded-2xl text-2xl sm:text-3xl font-bold transition-all duration-200 ${buttonClass} ${
-                            showResults ? 'cursor-default' : 'cursor-pointer active:scale-95'
+                          className={`p-4 sm:p-6 rounded-xl text-xl sm:text-2xl font-bold transition-all ${buttonClass} ${
+                            showResults ? 'cursor-default' : 'cursor-pointer'
                           }`}
                         >
-                          <span className="text-amber-500 mr-2 text-lg">{letter}.</span>
+                          <span className="text-amber-600 mr-2">{letter}.</span>
                           <span className={showResults && isCorrectOption ? 'text-emerald-700' : 'text-gray-800'}>
                             {option}
                           </span>
@@ -419,8 +254,8 @@ export default function Counting10Page() {
 
                   {/* Explanation */}
                   {showExplanation && question.explanation && (
-                    <div className="mt-6 p-5 bg-amber-50 rounded-2xl border-2 border-amber-200">
-                      <p className="text-amber-800 text-lg">
+                    <div className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                      <p className="text-amber-800">
                         <span className="font-bold">💡 Түсіндірме: </span>
                         {question.explanation}
                       </p>
@@ -438,13 +273,13 @@ export default function Counting10Page() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {!showResults ? (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-amber-600 text-lg">
+              <p className="text-amber-600">
                 {answeredCount} / {currentQuestions.length} сұраққа жауап берілді
               </p>
               <button
                 onClick={handleSubmit}
                 disabled={!allAnswered}
-                className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white text-xl font-bold rounded-2xl shadow-lg transition-all"
+                className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white text-lg font-bold rounded-xl shadow-lg transition-all"
               >
                 Тексеру ✓
               </button>
@@ -452,18 +287,18 @@ export default function Counting10Page() {
           ) : (
             <div className="space-y-6">
               {/* Batch Result */}
-              <div className="flex items-center justify-center gap-4 p-8 bg-gradient-to-r from-amber-100 to-orange-100 rounded-2xl">
+              <div className="flex items-center justify-center gap-4 p-6 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-3 mb-3">
-                    <Trophy className={`w-10 h-10 ${currentCorrect === questionsPerBatch ? 'text-amber-500' : 'text-amber-400'}`} strokeWidth={1.75} />
-                    <span className="text-4xl font-bold text-amber-800">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Trophy className={`w-8 h-8 ${currentCorrect === questionsPerBatch ? 'text-amber-500' : 'text-amber-400'}`} strokeWidth={1.75} />
+                    <span className="text-3xl font-bold text-amber-800">
                       {currentCorrect} / {currentQuestions.length}
                     </span>
                   </div>
-                  <p className="text-amber-700 text-lg">
-                    {currentCorrect === questionsPerBatch ? 'Керемет! Барлығы дұрыс! 🎉🌟' : 
-                     currentCorrect >= questionsPerBatch * 0.6 ? 'Жақсы нәтиже! 👍✨' : 
-                     'Жаттығуды жалғастырыңыз! 💪🔥'}
+                  <p className="text-amber-600">
+                    {currentCorrect === questionsPerBatch ? 'Керемет! Барлығы дұрыс! 🎉' : 
+                     currentCorrect >= questionsPerBatch * 0.6 ? 'Жақсы нәтиже! 👍' : 
+                     'Жаттығуды жалғастырыңыз! 💪'}
                   </p>
                 </div>
               </div>
@@ -472,14 +307,14 @@ export default function Counting10Page() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button
                   onClick={loadNextBatch}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xl font-bold rounded-2xl shadow-lg transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-lg font-bold rounded-xl shadow-lg transition-all"
                 >
                   Келесі 5 тапсырма
-                  <ChevronRight className="w-6 h-6" strokeWidth={2} />
+                  <ChevronRight className="w-5 h-5" strokeWidth={2} />
                 </button>
                 <button
                   onClick={handleReset}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-5 bg-white border-3 border-amber-300 hover:border-amber-400 hover:bg-amber-50 text-amber-700 text-lg font-bold rounded-2xl transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 bg-white border-2 border-amber-300 hover:border-amber-400 hover:bg-amber-50 text-amber-700 font-bold rounded-xl transition-all"
                 >
                   <RotateCcw className="w-5 h-5" strokeWidth={2} />
                   Басынан бастау
