@@ -142,7 +142,7 @@ export default function TopicPracticePage({ params }: PageProps) {
       {/* Questions */}
       <section className="py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          {(topic.questions ?? []).map((question, index) => {
+          {(topic.questions ?? []).map((question: any, index: number) => {
             const qResult = getQuestionResult(question.id)
             
             return (
