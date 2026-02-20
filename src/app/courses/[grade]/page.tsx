@@ -66,27 +66,34 @@ export default function GradePage({ params }: PageProps) {
           <h2 className="text-xl font-bold text-slate-900 mb-6">Тақырыптар</h2>
           
           <div className="space-y-3">
-            {(grade?.topics ?? []).map((topic, index) => (
-              <Link
-                key={topic.id}
-                href={`/courses/${gradeId}/${topic.id}`}
-                className="group flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl p-5 hover:bg-white hover:shadow-md hover:border-indigo-200 transition-all"
-              >
-                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-semibold group-hover:bg-indigo-200 transition-colors">
-                  {index + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900">{topic.title}</h3>
-                  <p className="text-sm text-slate-500 truncate">{topic.description}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
-                    {topic.questions.length} есеп
-                  </span>
-                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" strokeWidth={1.75} />
-                </div>
-              </Link>
-            ))}
+            {(grade?.topics ?? [])
+              .filter((topic) => topic?.id != null && String(topic.id).length > 0)
+              .map((topic, index) => {
+                const topicKey = String(topic.id)
+                const href = `/courses/${gradeId}/${topicKey}`
+                if (typeof window !== 'undefined') console.log('[GradePage] route:', href)
+                return (
+                  <Link
+                    key={topicKey}
+                    href={href}
+                    className="group flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl p-5 hover:bg-white hover:shadow-md hover:border-indigo-200 transition-all"
+                  >
+                    <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-semibold group-hover:bg-indigo-200 transition-colors">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900">{topic.title}</h3>
+                      <p className="text-sm text-slate-500 truncate">{topic.description}</p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                        {(topic.questions?.length ?? 0)} есеп
+                      </span>
+                      <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" strokeWidth={1.75} />
+                    </div>
+                  </Link>
+                )
+              })}
           </div>
         </div>
       </section>
