@@ -21,7 +21,7 @@ export default function CoursesPage() {
   }, [grades])
 
   const [mounted, setMounted] = useState(false)
-  const [progressMap, setProgressMap] = useState({})
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({})
 
   useEffect(() => {
     setMounted(true)
