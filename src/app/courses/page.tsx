@@ -1,14 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Navigation } from '@/components/Navigation'
 import { categories, getGradesByCategory, courseData, Grade, Topic } from '@/lib/courses'
 import { BookOpen, ChevronRight, ChevronDown, GraduationCap } from 'lucide-react'
 
 export default function CoursesPage() {
-  console.log(courseData)
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['primary', 'middle', 'high'])
+
+  const safeData = useMemo(() => courseData ?? {}, [])
+  const totalTopics = useMemo(
+    () =>
+      (Object.values(safeData) as Grade[]).reduce(
+        (sum: number, grade: Grade) => sum + (grade?.topics?.length ?? 0),
+        0
+      ),
+    [safeData]
+  )
+  const totalQuestions = useMemo(
+    () =>
+      (Object.values(safeData) as Grade[]).reduce(
+        (sum: number, grade: Grade) =>
+          sum + (grade?.topics ?? []).reduce((tSum: number, topic: Topic) => tSum + (topic?.questions?.length ?? 0), 0),
+        0
+      ),
+    [safeData]
+  )
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) =>
@@ -17,16 +35,6 @@ export default function CoursesPage() {
         : [...prev, categoryId]
     )
   }
-
-  const totalTopics = (Object.values(courseData ?? {}) as Grade[]).reduce(
-    (sum: number, grade: Grade) => sum + (grade?.topics?.length ?? 0),
-    0
-  )
-  const totalQuestions = (Object.values(courseData ?? {}) as Grade[]).reduce(
-    (sum: number, grade: Grade) =>
-      sum + (grade?.topics ?? []).reduce((tSum: number, topic: Topic) => tSum + (topic?.questions?.length ?? 0), 0),
-    0
-  )
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -140,7 +148,7 @@ export default function CoursesPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">Жылдам қатынау</h2>
           <div className="flex flex-wrap justify-center gap-2">
-            {Object.values(courseData ?? {}).map((grade, idx) => {
+            {Object.values(safeData).map((grade, idx) => {
               const category = (categories ?? []).find((c) => (c?.grades ?? []).includes(grade?.id))
               return (
                 <Link
