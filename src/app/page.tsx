@@ -55,37 +55,50 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-slate-950 py-32">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-8 tracking-tight">
+      <section className="relative bg-slate-950 py-28 overflow-hidden">
+        {/* Radial glow layers */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-400/5 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2" />
+        </div>
+
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white tracking-[0.02em]"
+            style={{ textShadow: '0 0 80px rgba(59, 130, 246, 0.15)' }}
+          >
             MathForce AI
           </h2>
+          <div className="w-24 h-[2px] mx-auto bg-gradient-to-r from-blue-500 to-cyan-400 mt-6 mb-6"></div>
           
-          <p className="text-xl sm:text-2xl text-slate-400 font-light mb-6">
+          <p className="text-lg sm:text-xl text-slate-400 font-light mb-5">
             Қабілетке негізделген білім моделі
           </p>
           
-          <p className="text-base text-slate-500 max-w-2xl mx-auto mb-14">
+          <p className="text-sm text-slate-500 max-w-xl mx-auto mb-10 leading-relaxed">
             Математикалық интеллектті құрылымдық талдау, адаптивті модельдеу және дарын әлеуетін стратегиялық анықтау
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/training"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-sm text-slate-900 text-sm font-medium rounded-lg hover:bg-white transition-all"
             >
               Жүйені бастау
-              <ArrowRight className="w-5 h-5" strokeWidth={1.75} />
+              <ArrowRight className="w-4 h-4" strokeWidth={2} />
             </Link>
             <Link
               href="/ubt"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-800 text-slate-200 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700 hover:border-slate-600 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.06] backdrop-blur-sm text-slate-300 text-sm font-medium rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/15 transition-all"
             >
               ҰБТ моделдеу
-              <ChevronRight className="w-5 h-5" strokeWidth={1.75} />
+              <ChevronRight className="w-4 h-4" strokeWidth={2} />
             </Link>
           </div>
         </div>
+
+        {/* Bottom gradient divider */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-700/40 to-transparent" />
       </section>
 
       {/* System Architecture Section */}
