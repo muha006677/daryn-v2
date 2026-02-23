@@ -14,9 +14,12 @@ interface PageProps {
 export default function TopicPracticePage({ params }: PageProps) {
   const { grade: gradeParam, topic: topicParam } = use(params)
   const router = useRouter()
-  const gradeId = parseInt(gradeParam, 10)
+  const gradeId = gradeParam
   const grade = courseData?.[gradeId]
-  const topic = grade?.topics?.[topicParam]
+  const topicsArray = Array.isArray(grade?.topics)
+    ? grade.topics
+    : Object.values(grade?.topics ?? {})
+  const topic = topicsArray.find((t: { id: string }) => t.id === topicParam)
 
   const [answers, setAnswers] = useState<AnswerState>({})
   const [result, setResult] = useState<PracticeResult | null>(null)
@@ -56,22 +59,12 @@ export default function TopicPracticePage({ params }: PageProps) {
     setShowExplanations(false)
   }
 
-  if (!grade || !topic) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navigation />
-        <div className="pt-32 pb-20 text-center">
-          <p className="text-slate-600">Тақырып табылмады</p>
-          <Link href="/courses" className="text-indigo-600 hover:underline mt-4 inline-block">
-            Курстарға оралу
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
   const getQuestionResult = (questionId: string) => {
     return result?.results.find((r) => r.questionId === questionId)
+  }
+
+  if (!grade || !topic) {
+    return <div style={{ padding: 40 }}>Topic not found</div>
   }
 
   return (
@@ -142,7 +135,7 @@ export default function TopicPracticePage({ params }: PageProps) {
       {/* Questions */}
       <section className="py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          {(topic.questions ?? []).map((question: any, index: number) => {
+          {topic.questions?.map((question: any, index: number) => {
             const qResult = getQuestionResult(question.id)
             
             return (
@@ -288,7 +281,7 @@ export default function TopicPracticePage({ params }: PageProps) {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <p className="text-slate-600">
-                {Object.keys(answers).length} / {(topic.questions ?? []).length} сұраққа жауап берілді
+                {Object.keys(answers).length} / {topic.questions?.length ?? 0} сұраққа жауап берілді
               </p>
               <button
                 onClick={handleSubmit}
