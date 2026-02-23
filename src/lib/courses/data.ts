@@ -694,11 +694,9 @@ export const courseData: Record<string, GradeType> = {
   ...curriculum.high,
 }
 
-// Helper to get grade list
-export const gradeList = Object.values(courseData).map((grade) => ({
-  id: grade.id,
-  label: grade.label,
-  topicCount: grade.topics.length,
+export const gradeList = Object.entries(courseData).map(([id, grade]) => ({
+  id,
+  topicCount: Object.keys(grade.topics ?? {}).length
 }))
 
 // Helper to get category for a grade
