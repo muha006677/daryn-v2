@@ -35,72 +35,12 @@ export const curriculum: Curriculum = {
   primary: {
     1: {
       id: 1,
-      label: '1 сынып',
-      topics: {
-        "counting-10": {
-          title: 'Заттарды санау (10-ға дейін)',
-          description: '1-ден 10-ға дейін заттарды санау — 100 динамикалық сұрақ',
-          questions: [],
-          generator: 'grade1Lesson1',
-        },
-        "counting": {
-          title: 'Санау және сандар',
-          description: '1-ден 20-ға дейін санау',
-          questions: [
-            {
-              id: '1-count-1',
-              type: 'single',
-              question: '5 + 3 = ?',
-              options: ['6', '7', '8', '9'],
-              correctAnswer: '8',
-              explanation: '5 + 3 = 8',
-              points: 1,
-            },
-            {
-              id: '1-count-2',
-              type: 'single',
-              question: '10 - 4 = ?',
-              options: ['5', '6', '7', '8'],
-              correctAnswer: '6',
-              explanation: '10 - 4 = 6',
-              points: 1,
-            },
-            {
-              id: '1-count-3',
-              type: 'input',
-              question: '7 + 2 қанша болады?',
-              correctAnswer: '9',
-              explanation: '7 + 2 = 9',
-              points: 2,
-            },
-          ],
-        },
-        "shapes": {
-          title: 'Геометриялық фигуралар',
-          description: 'Қарапайым фигураларды тану',
-          questions: [
-            {
-              id: '1-shape-1',
-              type: 'single',
-              question: 'Үшбұрыштың неше қабырғасы бар?',
-              options: ['2', '3', '4', '5'],
-              correctAnswer: '3',
-              explanation: 'Үшбұрыштың 3 қабырғасы бар',
-              points: 1,
-            },
-            {
-              id: '1-shape-2',
-              type: 'single',
-              question: 'Квадраттың барлық қабырғалары қандай?',
-              options: ['Әртүрлі', 'Тең', 'Ұзын', 'Қысқа'],
-              correctAnswer: 'Тең',
-              explanation: 'Квадраттың барлық қабырғалары тең',
-              points: 1,
-            },
-          ],
-        },
-        "counting-objects": {
+      label: "1 сынып",
+      topics: [
+        {
+          id: "counting-10",
           title: "Заттарды санау (10-ға дейін)",
+          description: "1-ден 10-ға дейін заттарды санау",
           questions: [
             {
               id: "g1l1-q1",
@@ -117,34 +57,10 @@ export const curriculum: Curriculum = {
               options: [6, 7, 8, 9],
               correctAnswer: 8,
               explanation: "7-ден кейін 8 келеді."
-            },
-            {
-              id: "g1l1-q3",
-              type: "single",
-              text: "3 нүктені көрсет.",
-              options: [1, 2, 3, 4],
-              correctAnswer: 3,
-              explanation: "Дұрыс жауап — 3."
-            },
-            {
-              id: "g1l1-q4",
-              type: "single",
-              text: "Қайсысы 10 саны?",
-              options: [8, 9, 10, 11],
-              correctAnswer: 10,
-              explanation: "10 саны дұрыс жауап."
-            },
-            {
-              id: "g1l1-q5",
-              type: "single",
-              text: "Қуыршақтар саны қанша?",
-              options: [2, 3, 4, 5],
-              correctAnswer: 4,
-              explanation: "Суретте 4 қуыршақ бар."
             }
           ]
-        },
-      },
+        }
+      ]
     },
     2: {
       id: 2,
