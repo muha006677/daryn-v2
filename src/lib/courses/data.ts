@@ -36,16 +36,14 @@ export const curriculum: Curriculum = {
     1: {
       id: 1,
       label: '1 сынып',
-      topics: [
-        {
-          id: 'counting-10',
+      topics: {
+        "counting-10": {
           title: 'Заттарды санау (10-ға дейін)',
           description: '1-ден 10-ға дейін заттарды санау — 100 динамикалық сұрақ',
           questions: [],
           generator: 'grade1Lesson1',
         },
-        {
-          id: 'counting',
+        "counting": {
           title: 'Санау және сандар',
           description: '1-ден 20-ға дейін санау',
           questions: [
@@ -77,8 +75,7 @@ export const curriculum: Curriculum = {
             },
           ],
         },
-        {
-          id: 'shapes',
+        "shapes": {
           title: 'Геометриялық фигуралар',
           description: 'Қарапайым фигураларды тану',
           questions: [
@@ -102,7 +99,52 @@ export const curriculum: Curriculum = {
             },
           ],
         },
-      ],
+        "counting-objects": {
+          title: "Заттарды санау (10-ға дейін)",
+          questions: [
+            {
+              id: "g1l1-q1",
+              type: "single",
+              text: "Суреттегі алма саны қанша?",
+              options: [3, 4, 5, 6],
+              correctAnswer: 5,
+              explanation: "Алмаларды санағанда 5 алма бар."
+            },
+            {
+              id: "g1l1-q2",
+              type: "single",
+              text: "Қай сан 7-ден кейін келеді?",
+              options: [6, 7, 8, 9],
+              correctAnswer: 8,
+              explanation: "7-ден кейін 8 келеді."
+            },
+            {
+              id: "g1l1-q3",
+              type: "single",
+              text: "3 нүктені көрсет.",
+              options: [1, 2, 3, 4],
+              correctAnswer: 3,
+              explanation: "Дұрыс жауап — 3."
+            },
+            {
+              id: "g1l1-q4",
+              type: "single",
+              text: "Қайсысы 10 саны?",
+              options: [8, 9, 10, 11],
+              correctAnswer: 10,
+              explanation: "10 саны дұрыс жауап."
+            },
+            {
+              id: "g1l1-q5",
+              type: "single",
+              text: "Қуыршақтар саны қанша?",
+              options: [2, 3, 4, 5],
+              correctAnswer: 4,
+              explanation: "Суретте 4 қуыршақ бар."
+            }
+          ]
+        },
+      },
     },
     2: {
       id: 2,
