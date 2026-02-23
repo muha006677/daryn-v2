@@ -45,18 +45,20 @@ export const curriculum: Curriculum = {
             {
               id: "g1l1-q1",
               type: "single",
-              text: "Суреттегі алма саны қанша?",
-              options: [3, 4, 5, 6],
-              correctAnswer: 5,
-              explanation: "Алмаларды санағанда 5 алма бар."
+              question: "Суреттегі алма саны қанша?",
+              options: ["3", "4", "5", "6"],
+              correctAnswer: "5",
+              explanation: "Алмаларды санағанда 5 алма бар.",
+              points: 1
             },
             {
               id: "g1l1-q2",
               type: "single",
-              text: "Қай сан 7-ден кейін келеді?",
-              options: [6, 7, 8, 9],
-              correctAnswer: 8,
-              explanation: "7-ден кейін 8 келеді."
+              question: "Қай сан 7-ден кейін келеді?",
+              options: ["6", "7", "8", "9"],
+              correctAnswer: "8",
+              explanation: "7-ден кейін 8 келеді.",
+              points: 1
             }
           ]
         }
